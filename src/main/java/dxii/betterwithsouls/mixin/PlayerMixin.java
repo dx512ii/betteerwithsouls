@@ -1,0 +1,184 @@
+package dxii.betterwithsouls.mixin;
+
+
+import dxii.betterwithsouls.BWSMain;
+import dxii.betterwithsouls.BWSUtils;
+import dxii.betterwithsouls.interfaces.IPlayer;
+import dxii.betterwithsouls.interfaces.IWorld;
+import dxii.betterwithsouls.mixin.accessor.IPlayerAccessor;
+import dxii.betterwithsouls.util.DynamicLight;
+import net.minecraft.core.block.Block;
+import net.minecraft.core.block.Blocks;
+import net.minecraft.core.block.tag.BlockTags;
+import net.minecraft.core.entity.Mob;
+import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.item.Item;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.item.Items;
+import net.minecraft.core.util.helper.DamageType;
+import net.minecraft.core.util.helper.MathHelper;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(value = Player.class, remap = false)
+public abstract class PlayerMixin implements IPlayer {
+
+	@Shadow
+	public boolean isSwinging;
+
+	@Unique
+	public float swingProgressNew;
+	@Unique
+	public float swingSpeed = 1;
+	@Unique
+	public Player thisObject = (Player)(Object)this;
+
+	@Unique
+	public DynamicLight dyn;
+
+
+	/**
+	 * @author	yap
+	 * @reason	yappson
+	 */
+	@Overwrite
+	public void swingItem() {
+		this.swingProgressNew = 0;
+		this.isSwinging = true;
+	}
+
+	@Inject(
+		method = "<init>",
+		at = @At(value = "TAIL"))
+	public void plyInit(CallbackInfo ci) {
+		if(BWSMain.dynLightEnabled.value && BWSMain.dynLightPlayer.value) {
+			dyn = BWSUtils.addDynamicLight(thisObject, 5, 20, -1, 0, -1);
+		}
+	}
+
+//	/**
+//	 * @author	yap
+//	 * @reason	yappson
+//	 */
+//	@Overwrite
+//	public boolean hurt(Entity attacker, int damage, DamageType type) {
+//		((IMobAccessor)thisObject).setEntityAge(0);
+//		if (thisObject.getHealth() <= 0) {
+//			return false;
+//		} else if (thisObject.gamemode.isPlayerInvulnerable()) {
+//			return false;
+//		} else {
+//			if (thisObject.isPlayerSleeping() && !thisObject.world.isClientSide) {
+//				thisObject.wakeUpPlayer(true, true);
+//			}
+//
+//			if (attacker instanceof MobMonster || attacker instanceof ProjectileArrow) {
+//				switch (thisObject.world.getDifficulty()) {
+//					case PEACEFUL:
+//						damage = 0;
+//						break;
+//					case EASY:
+//						damage = damage / 3 + 1;
+//						break;
+//					case HARD:
+//						damage = damage * 3 / 2;
+//				}
+//			}
+//
+//			Entity blamedAttacker = attacker;
+//			if (damage == 0 && !(attacker instanceof MobSnowman)) {
+//				return false;
+//			} else {
+//				if (attacker instanceof ProjectileArrow && ((ProjectileArrow)attacker).owner != null) {
+//					blamedAttacker = ((ProjectileArrow)attacker).owner;
+//				}
+//
+//				if (blamedAttacker instanceof Mob) {
+//					((IPlayerAccessor)thisObject).alertWolves((Mob)blamedAttacker, false);
+//				}
+//
+//				thisObject.addStat(StatList.damageTakenStat, damage);
+//				if (attacker != null) {
+//					thisObject.addStat(StatList.mobEncounterStats.get(EntityDispatcher.idForClass(attacker.getClass())), 1);
+//				}
+//
+//				return ((IMob)thisObject).bws$hurt(attacker, damage, type);
+//			}
+//		}
+//	}
+
+
+	/**
+	 * @author	yap
+	 * @reason	yappson
+	 */
+	@Overwrite
+	public void damageEntity(int damage, DamageType damageType) {
+		((IPlayerAccessor) thisObject).damageEntity(damage, damageType);
+	}
+
+
+	/**
+	 * @author	yap
+	 * @reason	yappson
+	 */
+	@Overwrite
+	public void updateAI() {
+		if (this.isSwinging) {
+			this.swingProgressNew += this.swingSpeed;
+			if (this.swingProgressNew >= 8) {
+				this.swingProgressNew = 0;
+				this.isSwinging = false;
+				this.swingSpeed = 1;
+			}
+		} else {
+			this.swingProgressNew = 0;
+		}
+
+		((Mob)(Object)this).swingProgress = MathHelper.clamp(this.swingProgressNew / 8, 0, 1);
+	}
+
+	@Unique
+	public void updatePlayerLight(){
+		dyn.brightness = playerEmitsLight() && BWSMain.dynLightPlayer.value ? 15 : 0;
+	}
+
+	@Unique
+	public boolean playerEmitsLight(){
+		ItemStack stack = thisObject.getHeldItem();
+		if(stack != null){
+			Block<?> block = thisObject.world.getBlock((int) thisObject.x-1, (int) thisObject.y, (int) thisObject.z-1);
+			boolean blockIsWater = block != null && block.hasTag(BlockTags.IS_WATER);
+			return (stack.getItem().id == Blocks.TORCH_COAL.id() && !blockIsWater );
+		}
+
+
+		return true;
+	}
+
+	@ModifyArg(
+		method = "attackTargetEntityWithCurrentItem(Lnet/minecraft/core/entity/Entity;)V",
+		at = @At(value = "INVOKE", target = "net/minecraft/core/entity/Entity.hurt (Lnet/minecraft/core/entity/Entity;ILnet/minecraft/core/util/helper/DamageType;)Z"), index = 1)
+	public int entAttackMixin(int i) {
+		//System.out.println("ATTAAACK!!! " + i);
+
+		return i > 2 ? i : 0;
+	}
+	@Inject(
+		method = "tick()V",
+		at = @At(value = "TAIL"))
+	public void tickMixin(CallbackInfo ci) {
+		updatePlayerLight();
+	}
+
+	@Unique
+	public void bws$setSwingSpeed(float speed){
+		this.swingSpeed = speed;
+	}
+}

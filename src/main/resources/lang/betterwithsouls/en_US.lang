@@ -1,0 +1,32 @@
+item.betterwithsouls.tomahawk_stone.name = Stone Tomahawk
+item.betterwithsouls.tomahawk_stone.desc = Simple, yet deadly weapon, meant to be used in close combat and to be thrown to strike those at distance
+
+item.betterwithsouls.shortsword_stone.name= Stone Shortsword
+item.betterwithsouls.shortsword_stone.desc= Slay pesky enemies with this sharp stone blade!
+
+item.minecraft.tool_sword_stone.desc="removed :troll:"
+
+
+betterwithsouls.options=Better With Souls
+
+betterwithsouls.category.dynlights=Dynamic Lighs (experimental! may cause lag!!)
+options.betterwithsouls.dynlightsrate=Rate (larger - slower rate)
+options.betterwithsouls.dynlightsenabled=Enabled
+options.betterwithsouls.dynlightsplayer=Player lights
+options.betterwithsouls.dynlightsexpl=Explosions lights (buggy)
+
+betterwithsouls.category.keybinds=Keyboard
+
+damagetype.slash.desc=Slash
+damagetype.strike.desc=Strike
+damagetype.thrust.desc=Thrust
+
+damagetype.magic.desc=Magic
+damagetype.fire.desc=Fire
+damagetype.lightning.desc=Light
+damagetype.dark.desc=Dark
+
+damagetype.poison.desc=Poison
+damagetype.blood.desc=Blood
+
+

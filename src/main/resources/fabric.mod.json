@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "betterwithsouls",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This mod aims to help new BTA modders.",
+  "name": "Better With Souls",
+  "description": "Small and simple content mod for BTA!",
   "authors": [
-    "Turnip Labs"
+    "=dxii="
   ],
   "contact": {
     "homepage": "",
@@ -19,20 +19,23 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.betterwithsouls.BWSMain"
     ],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.betterwithsouls.BWSMain"
 		],
 		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.betterwithsouls.BWSMain"
+		],
+		"initModels": [
+			"dxii.betterwithsouls.BWSModels"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.betterwithsouls.BWSMain"
 		]
 	},
   "mixins": [
-      "examplemod.mixins.json"
+		"betterwithsouls.mixins.json"
   ],
 
   "depends": {

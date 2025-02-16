@@ -1,0 +1,27 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dxii.betterwithsouls.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "_ExplosionMixin",
+    "ChunkCacheMixin",
+    "ItemMixin",
+    "MinecraftMixin",
+    "MobMixin",
+    "PlayerMixin",
+    "WorldMixin",
+    "accessor.IEntityAccessor",
+    "accessor.IMobAccessor"
+  ],
+  "client": [
+    "GameSettingsMixin",
+    "ScreenInventoryMixin",
+    "accessor.IGuiAccessor",
+    "accessor.IScreenAccessor",
+    "accessor.IScreenContainerAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
