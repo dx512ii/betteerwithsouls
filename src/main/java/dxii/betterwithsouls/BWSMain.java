@@ -1,5 +1,6 @@
 package dxii.betterwithsouls;
 
+import dxii.betterwithsouls.entity.MobZombieTest;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.gui.options.components.BooleanOptionComponent;
 import net.minecraft.client.gui.options.components.OptionsCategory;
@@ -10,13 +11,21 @@ import net.minecraft.client.option.GameSettings;
 //import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.OptionBoolean;
 import net.minecraft.client.option.OptionRange;
+import net.minecraft.client.render.texture.stitcher.TextureRegistry;
+import net.minecraft.core.util.HardIllegalArgumentException;
+import net.minecraft.core.util.collection.NamespaceID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import turniplabs.halplibe.helper.EntityHelper;
+import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 
-public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntrypoint {
+
+public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntrypoint, ClientStartEntrypoint {
     public static final String MOD_ID = "betterwithsouls";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -31,6 +40,9 @@ public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntry
 	@Override
 	public void beforeGameStart() {
 		new BWSModels();
+
+		EntityHelper.createEntity(MobZombieTest.class, NamespaceID.getPermanent(MOD_ID, "zombie"), "zondbi");
+
 	}
 
     @Override
@@ -76,5 +88,19 @@ public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntry
 		dynLightEnabled = new OptionBoolean(gs, MOD_ID+ ".dynlightsenabled", false);
 		dynLightPlayer = new OptionBoolean(gs, MOD_ID+ ".dynlightsplayer", true);
 		dynLightExplosions = new OptionBoolean(gs, MOD_ID+ ".dynlightsexpl", false);
+	}
+
+	@Override
+	public void beforeClientStart() {
+		try {
+			TextureRegistry.initializeAllFiles(MOD_ID, TextureRegistry.guiSpriteAtlas, true);
+		} catch (Exception var2) {
+			LOGGER.warn("Failed to fully initialize assets, some issue may occur!", var2);
+		}
+	}
+
+	@Override
+	public void afterClientStart() {
+
 	}
 }

@@ -17,6 +17,10 @@ public class BWSItems {
 	public static int ITEM_ID = BWSConfig.CFG.getInt("IDs.startItemID");
 	public static final ConfigHandler cfg;
 
+	public static Item SACRIFICE_RING;
+	public static Item SACRIFICE_RING_RARE;
+	public static Item SACRIFICE_RING_BROKEN;
+
 	public static Item TOMAHAWK_STONE;
 	public static Item SHORTSWORD_STONE;
 

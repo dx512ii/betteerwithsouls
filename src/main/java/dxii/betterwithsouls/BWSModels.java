@@ -1,13 +1,20 @@
 package dxii.betterwithsouls;
 
+import dxii.betterwithsouls.entity.MobZombieTest;
+import dxii.betterwithsouls.entity.model.ModelZombieTest;
 import dxii.betterwithsouls.item.model.WeaponModelStandart;
+import dxii.betterwithsouls.mixin.accessor.IAEntityDispatcher;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.TileEntityRenderDispatcher;
 import net.minecraft.client.render.block.color.BlockColorDispatcher;
 import net.minecraft.client.render.block.model.BlockModelDispatcher;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.MobRendererBiped;
 import net.minecraft.client.render.item.model.ItemModelDispatcher;
 import net.minecraft.client.render.item.model.ItemModelStandard;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
+import net.minecraft.core.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 import turniplabs.halplibe.helper.ModelHelper;
 import turniplabs.halplibe.util.ModelEntrypoint;
 
@@ -38,7 +45,7 @@ public class BWSModels implements ModelEntrypoint {
 
 	@Override
 	public void initEntityModels(EntityRenderDispatcher dispatcher) {
-
+		addEntityModel(dispatcher, MobZombieTest.class, new MobRendererBiped<>(new ModelZombieTest(), 0.5F));
 	}
 
 	@Override
@@ -49,5 +56,14 @@ public class BWSModels implements ModelEntrypoint {
 	@Override
 	public void initBlockColors(BlockColorDispatcher dispatcher) {
 
+	}
+
+
+
+
+	//UTIL:
+	public void addEntityModel(EntityRenderDispatcher dispatcher, @NotNull Class<? extends Entity> clazz, EntityRenderer<?> renderer){
+		renderer.init(dispatcher);
+		((IAEntityDispatcher)dispatcher).getRenderers().put(clazz, renderer);
 	}
 }

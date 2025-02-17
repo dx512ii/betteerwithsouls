@@ -1,6 +1,6 @@
 package dxii.betterwithsouls.mixin;
 
-import dxii.betterwithsouls.BWSUtils;
+
 import dxii.betterwithsouls.interfaces.IMinecraft;
 import dxii.betterwithsouls.item.ItemWeapon;
 import dxii.betterwithsouls.util.CombatModule;
@@ -13,8 +13,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.WorldClient;
-import net.minecraft.core.block.BlockLogicDoor;
-import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import net.minecraft.core.util.helper.Axis;
@@ -23,7 +21,6 @@ import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.HitResult;
-import net.minecraft.core.util.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;

@@ -8,6 +8,12 @@ import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
 
+/*
+DXII'S WEAPON BASE
+IT WORKS, I LIKE IT, IT CAN DO COOLDOWNS, LMB/RMB ATTACKS AND 3RD ONE SPECIAL
+WITH KEYBIND, FEEL FREE TO TAKE IT
+ */
+
 public class ItemWeapon extends BWSModItem {
 	//attacks delay and hold
 	public int atkDelay1 = 0;

@@ -3,20 +3,21 @@ package dxii.betterwithsouls.mixin;
 
 import dxii.betterwithsouls.BWSMain;
 import dxii.betterwithsouls.BWSUtils;
+import dxii.betterwithsouls.interfaces.IMob;
 import dxii.betterwithsouls.interfaces.IPlayer;
-import dxii.betterwithsouls.interfaces.IWorld;
-import dxii.betterwithsouls.mixin.accessor.IPlayerAccessor;
+import dxii.betterwithsouls.util.BWSDamageTypes;
+import dxii.betterwithsouls.util.DamageResistModule;
 import dxii.betterwithsouls.util.DynamicLight;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
-import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.Items;
 import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.util.helper.MathHelper;
+import net.minecraft.core.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Player.class, remap = false)
-public abstract class PlayerMixin implements IPlayer {
+public abstract class PlayerMixin extends Mob implements IPlayer {
 
 	@Shadow
 	public boolean isSwinging;
@@ -41,6 +42,10 @@ public abstract class PlayerMixin implements IPlayer {
 
 	@Unique
 	public DynamicLight dyn;
+
+	public PlayerMixin(World world) {
+		super(world);
+	}
 
 
 	/**
@@ -59,6 +64,9 @@ public abstract class PlayerMixin implements IPlayer {
 	public void plyInit(CallbackInfo ci) {
 		if(BWSMain.dynLightEnabled.value && BWSMain.dynLightPlayer.value) {
 			dyn = BWSUtils.addDynamicLight(thisObject, 5, 20, -1, 0, -1);
+
+			DamageResistModule dResists = ((IMob)thisObject).bws$getMobResist();
+			dResists.setDefence(BWSDamageTypes.SLASH, 10);
 		}
 	}
 
@@ -120,7 +128,7 @@ public abstract class PlayerMixin implements IPlayer {
 	 */
 	@Overwrite
 	public void damageEntity(int damage, DamageType damageType) {
-		((IPlayerAccessor) thisObject).damageEntity(damage, damageType);
+		super.damageEntity(damage, damageType);
 	}
 
 
@@ -146,28 +154,59 @@ public abstract class PlayerMixin implements IPlayer {
 
 	@Unique
 	public void updatePlayerLight(){
-		dyn.brightness = playerEmitsLight() && BWSMain.dynLightPlayer.value ? 15 : 0;
-	}
 
-	@Unique
-	public boolean playerEmitsLight(){
 		ItemStack stack = thisObject.getHeldItem();
+
+		boolean emits = false;
+
+		int olbrightness = dyn.brightness;
+		int brightness = dyn.brightness;
+		int radius = dyn.radius;
+
+
+
 		if(stack != null){
 			Block<?> block = thisObject.world.getBlock((int) thisObject.x-1, (int) thisObject.y, (int) thisObject.z-1);
 			boolean blockIsWater = block != null && block.hasTag(BlockTags.IS_WATER);
-			return (stack.getItem().id == Blocks.TORCH_COAL.id() && !blockIsWater );
+
+			boolean lowEmit = !blockIsWater && stack.itemID == Blocks.TORCH_REDSTONE_ACTIVE.id()
+				|| stack.itemID == Items.DUST_GLOWSTONE.id
+//				|| stack.itemID == Blocks.COBBLE_NETHERRACK_IGNEOUS.id()
+				|| stack.itemID == Items.NETHERCOAL.id;
+			boolean medEmit = !blockIsWater && stack.itemID == Blocks.TORCH_COAL.id()
+				|| stack.itemID == Items.LANTERN_FIREFLY_GREEN.id
+				|| stack.itemID == Items.LANTERN_FIREFLY_BLUE.id
+				|| stack.itemID == Blocks.PUMPKIN_CARVED_ACTIVE.id()
+				|| stack.itemID == Items.LANTERN_FIREFLY_ORANGE.id;
+			boolean highEmit = !blockIsWater && stack.itemID == Items.BUCKET_LAVA.id
+				|| stack.itemID == Blocks.GLOWSTONE.id();
+
+
+			emits = lowEmit || medEmit || highEmit;
+			if(lowEmit) {
+				brightness = 12;
+				radius = 3;
+			}
+			if(medEmit) {
+				brightness = 17;
+				radius = 5;
+			}
+			if(highEmit) {
+				brightness = 20;
+				radius = 8;
+			}
 		}
 
-
-		return true;
+		dyn.brightness =  BWSMain.dynLightPlayer.value && emits ? brightness : 0;
+		dyn.markBlocksNearby(true);
 	}
+
+
 
 	@ModifyArg(
 		method = "attackTargetEntityWithCurrentItem(Lnet/minecraft/core/entity/Entity;)V",
 		at = @At(value = "INVOKE", target = "net/minecraft/core/entity/Entity.hurt (Lnet/minecraft/core/entity/Entity;ILnet/minecraft/core/util/helper/DamageType;)Z"), index = 1)
 	public int entAttackMixin(int i) {
-		//System.out.println("ATTAAACK!!! " + i);
-
 		return i > 2 ? i : 0;
 	}
 	@Inject(

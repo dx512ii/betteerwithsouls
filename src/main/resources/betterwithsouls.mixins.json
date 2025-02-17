@@ -17,6 +17,7 @@
   "client": [
     "GameSettingsMixin",
     "ScreenInventoryMixin",
+    "accessor.IAEntityDispatcher",
     "accessor.IGuiAccessor",
     "accessor.IScreenAccessor",
     "accessor.IScreenContainerAccessor"

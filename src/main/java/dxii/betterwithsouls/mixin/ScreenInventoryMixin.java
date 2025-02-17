@@ -5,12 +5,10 @@ import dxii.betterwithsouls.mixin.accessor.IGuiAccessor;
 import dxii.betterwithsouls.mixin.accessor.IScreenAccessor;
 import dxii.betterwithsouls.mixin.accessor.IScreenContainerAccessor;
 import dxii.betterwithsouls.util.BWSDamageTypes;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.container.ScreenInventory;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.lang.text.Text;
 import net.minecraft.core.util.helper.Color;
 import net.minecraft.core.util.helper.DamageType;
 import org.lwjgl.opengl.GL11;
@@ -40,15 +38,16 @@ public class ScreenInventoryMixin {
 	@Overwrite
 	public void drawProtectionOverlay(int mouseX, int mouseY) {
 		this.hoveredDamageType = null;
-		int x = thisObject.width / 2 - this.armourValuesFloat +8;
+		int x = thisObject.width / 2 - this.armourValuesFloat-8;
 		int y = thisObject.height / 2 - 75;
 
 		int numDef = 9;
 
-		int w = 30;
+		int w = 45;
 		int h = numDef*13;
-		GL11.glEnable(3042);
-		((IGuiAccessor)this)._drawGradientRect(x, y, x + w, y + h, this.protectionOverlayBgColor.getARGB(), this.protectionOverlayBgColor.getARGB());
+		GL11.glEnable(0xbe2);
+		((IGuiAccessor)this)._drawGradientRect(x, y-10, x + w, y + h, this.protectionOverlayBgColor.getARGB(), this.protectionOverlayBgColor.getARGB());
+		thisObject.drawString(((IScreenAccessor)thisObject).getFont(), "def:", x+5, y-8, 0xffffff);
 		GL11.glDisable(3042);
 		GL11.glDisable(2884);
 		int w2 = 26;
@@ -68,11 +67,12 @@ public class ScreenInventoryMixin {
 //				int color = 255 - l << 16 | l << 8 | -16777216;
 				GL11.glEnable(3553);
 				GL11.glColor4d(1.0, 1.0, 1.0, 1.0);
-				thisObject.drawGuiIcon(x2 + 2, y2 + 2, 9, 9, TextureRegistry.getTexture(damageType.getIcon()));
+				thisObject.drawGuiIcon(x2 + 2, y2 + 4, 9, 9, TextureRegistry.getTexture(damageType.getIcon()));
 				//((IScreenAccessor)thisObject).getFont().drawString(I18n.getInstance().translateKey("gui.inventory.label.crafting"), 106, 16, 4210752);
 
 
-				thisObject.drawString(((IScreenAccessor)thisObject).getFont(), String.valueOf(protection), x2+20, y2+5, 0xffffff);
+				thisObject.drawString(((IScreenAccessor)thisObject).getFont(), ": "+ protection, x2+15, y2+5, 0xffffff);
+
 				GL11.glDisable(3553);
 
 

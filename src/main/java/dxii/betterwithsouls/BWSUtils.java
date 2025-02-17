@@ -1,21 +1,12 @@
 package dxii.betterwithsouls;
 
 import dxii.betterwithsouls.interfaces.IWorld;
-import dxii.betterwithsouls.mixin.accessor.IGuiAccessor;
-import dxii.betterwithsouls.mixin.accessor.IScreenAccessor;
-import dxii.betterwithsouls.mixin.accessor.IScreenContainerAccessor;
-import dxii.betterwithsouls.util.BWSDamageTypes;
 import dxii.betterwithsouls.util.DynamicLight;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.container.ScreenInventory;
-import net.minecraft.client.render.texture.stitcher.TextureRegistry;
+import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.entity.Entity;
-import net.minecraft.core.lang.I18n;
-import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
-import org.lwjgl.opengl.GL11;
 
 public class BWSUtils {
 
@@ -91,6 +82,12 @@ public class BWSUtils {
 		if(((IWorld)world).bws$getDynLights() != null) {
 			((IWorld)world).bws$getDynLights().modifyPlayerLight(radius, brightness);
 		}
+	}
+
+
+	public static void addBoxBlockbench(Cube cube, float posX, float posY, float posZ, int sizeX, int sizeY, int sizeZ, int pivotX, int pivotY, int pivotZ, float expandAmount){
+		cube.addBox(posX+pivotX, Math.abs(posY)-sizeY+pivotY, posZ-pivotZ, sizeX, sizeY, sizeZ, expandAmount);
+		cube.setRotationPoint(-pivotX, pivotY, -pivotZ);
 	}
 
 }

@@ -24,6 +24,12 @@
 		"beforeGameStart": [
 			"dxii.betterwithsouls.BWSMain"
 		],
+		"beforeClientStart": [
+			"dxii.betterwithsouls.BWSMain"
+		],
+		"afterClientStart": [
+			"dxii.betterwithsouls.BWSMain"
+		],
 		"afterGameStart": [
 			"dxii.betterwithsouls.BWSMain"
 		],

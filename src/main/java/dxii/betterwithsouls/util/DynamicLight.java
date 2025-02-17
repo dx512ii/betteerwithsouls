@@ -59,15 +59,15 @@ public class DynamicLight {
 			if(this.entity.xd != 0 ||
 			this.entity.yd != 0 ||
 			this.entity.zd != 0){
-				markBlocksNearby();
+				markBlocksNearby(false);
 			}
 		}else if(!fading){
 			this.remove();
-			markBlocksNearby();
+			markBlocksNearby(false);
 		}else{
 			if(this.radius == 0){
 				this.remove();
-				markBlocksNearby();
+				markBlocksNearby(false);
 			}else {
 				this.radius--;
 			}
@@ -76,8 +76,14 @@ public class DynamicLight {
 
 	}
 
-	public void markBlocksNearby(){
+	public void markBlocksNearby(boolean force){
 		int rad = this.radius;
+
+		if(this.brightness <= 0 && !force){
+			return;
+		}
+
+		//System.out.println(brightness);
 
 		int plyx = this.x;
 		int plyy = this.y;

@@ -65,7 +65,7 @@ public class DynamicLightsModule {
 			double brightness = light.brightness;
 
 			if(brightness == 0){
-				return 0;
+				continue;
 			}
 
 			double rad = light.radius;
