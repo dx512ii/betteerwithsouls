@@ -2,7 +2,6 @@ package dxii.betterwithsouls.util;
 
 import dxii.betterwithsouls.BWSMain;
 import dxii.betterwithsouls.BWSUtils;
-import net.minecraft.core.entity.Entity;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3;
 

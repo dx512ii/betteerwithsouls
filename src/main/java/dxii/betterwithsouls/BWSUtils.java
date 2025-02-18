@@ -4,11 +4,19 @@ import dxii.betterwithsouls.interfaces.IWorld;
 import dxii.betterwithsouls.util.DynamicLight;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.Mob;
 import net.minecraft.core.util.helper.MathHelper;
+import net.minecraft.core.util.phys.HitResult;
 import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
 
+import javax.annotation.Nullable;
+
+import static net.minecraft.core.enums.LightLayer.Block;
+
 public class BWSUtils {
+
+
 
 	public static void pushRelative(Entity entity, float right, float up, float forward, float amount) {
 		System.out.println(right);
@@ -30,17 +38,47 @@ public class BWSUtils {
 		entity.zd += (forward * cosYaw + right * sinYaw);
 	}
 
+	/*
+	MATH & VECTORS
+	 */
 	public static double vecDist(Vec3 vec1, Vec3 vec2){
 		return Vec3.getPermanentVec3(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z).length();
 	}
 	public static double vecDistSquared(Vec3 vec1, Vec3 vec2){
 		return abs(((vec1.x - vec2.x)*(vec1.x - vec2.x) + (vec1.y - vec2.y)*(vec1.y - vec2.y) + (vec1.z - vec2.z)*(vec1.z - vec2.z)) );
 	}
-
+	public static double DotProduct(Vec3 Vec1, Vec3 Vec2){
+		return Vec1.x * Vec2.x + Vec1.y * Vec2.y + Vec1.z * Vec2.z;
+	}
 	public static double abs(double i){
 		return i < 0 ? -i : i;
 	}
 
+	/*
+	ENTITY STUFF
+	 */
+
+	public static double getEntitiesLookDot(Mob ent1, Mob ent2){
+		return DotProduct(ent1.getLookAngle(), ent2.getLookAngle());
+	}
+
+	public static boolean getEntitiesFacing(Mob ent1, Mob ent2){
+		return getEntitiesLookDot(ent1, ent2) < -0.6;
+	}
+
+	public static double getDotToEntity(Mob entLooking, Entity entLooked){
+		Vec3 dirToEntLooked = entLooking.getPosition(1, false).add( -entLooked.x, -entLooked.y, -entLooked.z);
+
+		return DotProduct(entLooking.getLookAngle(), dirToEntLooked.normalize());
+	}
+
+	public static boolean isEntityInFront(Mob entLooking, Entity entLooked){
+		return getDotToEntity(entLooking, entLooked) < -0.5;
+	}
+
+	/*
+	DYNAMIC LIGHTS
+	 */
 	public static DynamicLight addDynamicLight(Entity ent, int radius, int brightness, int xOffset, int yOffset, int zOffset){
 		if(((IWorld)ent.world).bws$getDynLights() != null) {
 			DynamicLight dyn = new DynamicLight(ent, ent.world);
@@ -63,7 +101,6 @@ public class BWSUtils {
 		}
 		return null;
 	}
-
 	public static DynamicLight addDynamicLightFading(World world, int radius, int brightness, int x, int y, int z){
 		if(((IWorld)world).bws$getDynLights() != null) {
 			DynamicLight dyn = new DynamicLight(x, y, z, world);
@@ -77,17 +114,10 @@ public class BWSUtils {
 		}
 		return null;
 	}
-
 	public static void modifyPlayerLight(World world, int radius, int brightness){
 		if(((IWorld)world).bws$getDynLights() != null) {
 			((IWorld)world).bws$getDynLights().modifyPlayerLight(radius, brightness);
 		}
-	}
-
-
-	public static void addBoxBlockbench(Cube cube, float posX, float posY, float posZ, int sizeX, int sizeY, int sizeZ, int pivotX, int pivotY, int pivotZ, float expandAmount){
-		cube.addBox(posX+pivotX, Math.abs(posY)-sizeY+pivotY, posZ-pivotZ, sizeX, sizeY, sizeZ, expandAmount);
-		cube.setRotationPoint(-pivotX, pivotY, -pivotZ);
 	}
 
 }

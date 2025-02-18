@@ -1,12 +1,8 @@
 package dxii.betterwithsouls.mixin;
 
 import dxii.betterwithsouls.interfaces.IWorld;
-import dxii.betterwithsouls.util.DynamicLight;
 import dxii.betterwithsouls.util.DynamicLightsModule;
-import net.minecraft.core.entity.player.Player;
-import net.minecraft.core.enums.LightLayer;
 import net.minecraft.core.world.World;
-import net.minecraft.core.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;

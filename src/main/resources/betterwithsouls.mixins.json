@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "_ExplosionMixin",
+    "_WandMixin",
     "ChunkCacheMixin",
     "ItemMixin",
     "MinecraftMixin",
@@ -15,6 +16,7 @@
     "accessor.IMobAccessor"
   ],
   "client": [
+    "CubeMixin",
     "GameSettingsMixin",
     "ScreenInventoryMixin",
     "accessor.IAEntityDispatcher",

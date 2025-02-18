@@ -63,7 +63,7 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 		at = @At(value = "TAIL"))
 	public void plyInit(CallbackInfo ci) {
 		if(BWSMain.dynLightEnabled.value && BWSMain.dynLightPlayer.value) {
-			dyn = BWSUtils.addDynamicLight(thisObject, 5, 20, -1, 0, -1);
+			dyn = BWSUtils.addDynamicLight(thisObject, 5, 20, -1, 0, 0);
 
 			DamageResistModule dResists = ((IMob)thisObject).bws$getMobResist();
 			dResists.setDefence(BWSDamageTypes.SLASH, 10);

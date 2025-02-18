@@ -1,6 +1,7 @@
 package dxii.betterwithsouls;
 
-import dxii.betterwithsouls.entity.MobZombieTest;
+
+import dxii.betterwithsouls.entity.ZombieTest;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.gui.options.components.BooleanOptionComponent;
 import net.minecraft.client.gui.options.components.OptionsCategory;
@@ -8,11 +9,10 @@ import net.minecraft.client.gui.options.components.ToggleableOptionComponent;
 import net.minecraft.client.gui.options.data.OptionsPage;
 import net.minecraft.client.gui.options.data.OptionsPages;
 import net.minecraft.client.option.GameSettings;
-//import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.OptionBoolean;
 import net.minecraft.client.option.OptionRange;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
-import net.minecraft.core.util.HardIllegalArgumentException;
 import net.minecraft.core.util.collection.NamespaceID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +20,6 @@ import turniplabs.halplibe.helper.EntityHelper;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 
 public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntrypoint, ClientStartEntrypoint {
@@ -41,7 +38,7 @@ public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntry
 	public void beforeGameStart() {
 		new BWSModels();
 
-		EntityHelper.createEntity(MobZombieTest.class, NamespaceID.getPermanent(MOD_ID, "zombie"), "zondbi");
+		EntityHelper.createEntity(ZombieTest.class, NamespaceID.getPermanent(MOD_ID, "zombdbi"), "zondbi");
 
 	}
 

@@ -1,6 +1,6 @@
 package dxii.betterwithsouls;
 
-import dxii.betterwithsouls.entity.MobZombieTest;
+import dxii.betterwithsouls.entity.BWSMonsterBase;
 import dxii.betterwithsouls.entity.model.ModelZombieTest;
 import dxii.betterwithsouls.item.model.WeaponModelStandart;
 import dxii.betterwithsouls.mixin.accessor.IAEntityDispatcher;
@@ -45,7 +45,7 @@ public class BWSModels implements ModelEntrypoint {
 
 	@Override
 	public void initEntityModels(EntityRenderDispatcher dispatcher) {
-		addEntityModel(dispatcher, MobZombieTest.class, new MobRendererBiped<>(new ModelZombieTest(), 0.5F));
+		addEntityModel(dispatcher, BWSMonsterBase.class, new MobRendererBiped<>(new ModelZombieTest(), 0.5F));
 	}
 
 	@Override
