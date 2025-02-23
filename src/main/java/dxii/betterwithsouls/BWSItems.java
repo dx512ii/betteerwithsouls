@@ -2,6 +2,7 @@ package dxii.betterwithsouls;
 
 
 
+import dxii.betterwithsouls.item.ItemDummy;
 import dxii.betterwithsouls.item.weapon.WeaponShortsword;
 import dxii.betterwithsouls.item.weapon.WeaponTomahawk;
 import net.minecraft.core.item.Item;
@@ -16,6 +17,8 @@ import static dxii.betterwithsouls.BWSMain.MOD_ID;
 public class BWSItems {
 	public static int ITEM_ID = BWSConfig.CFG.getInt("IDs.startItemID");
 	public static final ConfigHandler cfg;
+
+	public static Item ITEM_DUMMY;
 
 	public static Item SACRIFICE_RING;
 	public static Item SACRIFICE_RING_RARE;
@@ -35,6 +38,8 @@ public class BWSItems {
 			.build(new WeaponTomahawk("tomahawk_stone", MOD_ID + (":item/tomahawk_stone"), nextID()).setWeaponDamage(6));
 		SHORTSWORD_STONE = new ItemBuilder(MOD_ID)
 			.build(new WeaponShortsword(ToolMaterial.stone, "shortsword_stone", MOD_ID + (":item/shortsword_stone"), nextID()).setWeaponDamage(6));
+		ITEM_DUMMY = new ItemBuilder(MOD_ID)
+			.build(new ItemDummy("item_dummy", MOD_ID + (":item/item_dummy"), nextID()));
 
 	}
 

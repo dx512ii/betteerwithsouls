@@ -25,24 +25,28 @@ public class WeaponTomahawk extends ItemWeapon {
 		atk3hold = false;
 	}
 
+	@Override
+	public void deploy(ItemStack itemstack, World world, Player entityplayer){
+		super.deploy(itemstack, world, entityplayer);
+	}
+
 	//primary
 	@Override
-	public void attack1callback(ItemStack itemstack, World world, Player entityplayer, boolean timed){
+	public void attack1(ItemStack itemstack, World world, Player entityplayer, boolean timed){
 		if(timed){
-			System.out.println("attack1 timed!");
+			//System.out.println("attack1 timed!");
 			((IPlayer) entityplayer).bws$setSwingSpeed(0.5f);
-			((IMob) entityplayer).bws$sendMobAnim(EMobAnim.ATTACK1);
 
 		}else {
 			entityplayer.swingItem();
 			((IPlayer) entityplayer).bws$setSwingSpeed(0.8f);
-			System.out.println("attack1");
+			//System.out.println("attack1");
 		}
 	}
 
 	//secondary (also hold release)
 	@Override
-	public void attack2callback(ItemStack itemstack, World world, Player entityplayer, boolean timed){
+	public void attack2(ItemStack itemstack, World world, Player entityplayer, boolean timed){
 		if(timed) {
 			//((IMob) entityplayer).bws$sendMobAnim(EMobAnim.ATTACK1);
 		}else{
@@ -58,12 +62,8 @@ public class WeaponTomahawk extends ItemWeapon {
 
 	//parry
 	@Override
-	public void attack3callback(ItemStack itemstack, World world, Player entityplayer, boolean timed){
-//		if(timed) {
-//			System.out.println("attack3 timed!");
-//		}else{
-//			System.out.println("attack3!");
-//		}
+	public void attack3(ItemStack itemstack, World world, Player entityplayer, boolean timed){
+		super.attack3(itemstack, world, entityplayer, timed);
 
 	}
 	//parry hold

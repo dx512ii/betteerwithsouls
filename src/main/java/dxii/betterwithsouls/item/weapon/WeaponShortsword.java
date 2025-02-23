@@ -1,8 +1,5 @@
 package dxii.betterwithsouls.item.weapon;
 
-import dxii.betterwithsouls.enums.EMobAnim;
-import dxii.betterwithsouls.interfaces.IMob;
-import dxii.betterwithsouls.interfaces.IPlayer;
 import dxii.betterwithsouls.item.ItemWeapon;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
@@ -15,7 +12,7 @@ public class WeaponShortsword extends ItemWeapon {
 
 		this.setMaxDamage(mat.getDurability());
 
-		this.atkDelay1 = 6;
+		this.atkDelay1 = 10;
 		this.atkDelay2 = 5;
 		this.atkDelay3 = 3;
 
@@ -26,33 +23,25 @@ public class WeaponShortsword extends ItemWeapon {
 		this.atk1hold = false;
 		this.atk2hold = true;
 		this.atk3hold = false;
+
+		this.anim_IDLE = null;
+	}
+
+	@Override
+	public void holster(ItemStack itemstack, World world, Player entityplayer){
+		super.holster(itemstack, world, entityplayer);
 	}
 
 	//primary
 	@Override
-	public void attack1callback(ItemStack itemstack, World world, Player entityplayer, boolean timed){
-		this.atkDelay1 = 10;
-		if(!timed){
-			//System.out.println("attack1 timed!");
-			entityplayer.swingItem();
-			EMobAnim anim = itemRand.nextBoolean() ? EMobAnim.ATTACK1 : EMobAnim.ATTACK2;
-			((IMob) entityplayer).bws$sendMobAnim(EMobAnim.ATTACK1);
-			((IPlayer) entityplayer).bws$setSwingSpeed(1.0f);
-
-		}else {
-			((IPlayer) entityplayer).bws$setSwingSpeed(0.75f);
-			//System.out.println("attack1");
-		}
+	public void attack1(ItemStack itemstack, World world, Player entityplayer, boolean timed){
+		super.attack1(itemstack, world, entityplayer, timed);
 	}
 
 	//secondary (also hold release)
 	@Override
-	public void attack2callback(ItemStack itemstack, World world, Player entityplayer, boolean timed){
-		if(timed) {
-			//((IMob) entityplayer).bws$sendMobAnim(EMobAnim.ATTACK1);
-		}else{
-
-		}
+	public void attack2(ItemStack itemstack, World world, Player entityplayer, boolean timed){
+		super.attack2(itemstack, world, entityplayer, timed);
 	}
 	//secondary hold
 	@Override
@@ -64,12 +53,8 @@ public class WeaponShortsword extends ItemWeapon {
 
 	//parry
 	@Override
-	public void attack3callback(ItemStack itemstack, World world, Player entityplayer, boolean timed){
-//		if(timed) {
-//			System.out.println("attack3 timed!");
-//		}else{
-//			System.out.println("attack3!");
-//		}
+	public void attack3(ItemStack itemstack, World world, Player entityplayer, boolean timed){
+		super.attack3(itemstack, world, entityplayer, timed);
 
 	}
 	//parry hold

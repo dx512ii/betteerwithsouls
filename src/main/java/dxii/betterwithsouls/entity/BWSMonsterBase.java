@@ -2,13 +2,10 @@ package dxii.betterwithsouls.entity;
 
 import com.mojang.nbt.tags.CompoundTag;
 import dxii.betterwithsouls.BWSUtils;
-import dxii.betterwithsouls.util.BWSDamageTypes;
-import net.minecraft.core.data.gamerule.GameRule;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.monster.MobMonster;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.enums.LightLayer;
-import net.minecraft.core.player.gamemode.Gamemode;
 import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3;
@@ -18,40 +15,47 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BWSMonsterBase extends MobMonster {
+	//general params
 	public int attackStrength = 2;
 	public float moveSpeedMul = 1;
-
 	public int sightRadius = 32;
 	public int xrayRadius = 3;
-
 	public int maxSpawnedWinter = 8;
 	public int maxSpawnedSummer = 2;
 	public int maxSpawnedYearly = 4;
-
 	public boolean obeyGameRules = true;
 
+
 	/**
-	 * random path roaming happens all the time, it will never stop
+	 * @if_true: random roaming happens all the time, it will never stop until mob finds a target
 	 */
 	public boolean chaotic = false;
 	/**
-	 * charges straight at the target, never randomly roams after attacking
+	 * @if_true: charges straight at the target, never randomly roams after attacking
 	 */
 	public boolean feral = false;
+	/**
+	 * @if_true: looks in random directions all the time, instead of randomly
+	 */
+	public boolean crazy = false;
+
+
 
 
 	public BWSMonsterBase(@Nullable World world) {
 		super(world);
+		this.moveSpeed = 1.0F;
 	}
 
 	@Override
 	public int getMaxHealth() {
-		return 20;
+		return 21;
 	}
 
 	@Override
 	protected void updateAI() {
 		if (this.world != null) {
+//		if (false) {
 			this.hasAttacked = this.isMovementCeased();
 			float sightRadius = this.sightRadius*2;
 			if (this.target == null) {
@@ -70,8 +74,8 @@ public class BWSMonsterBase extends MobMonster {
 				}
 			}
 
-			if (this.chaotic || this.hasAttacked || this.target == null || this.pathToEntity != null) {
-				if ((!this.hasAttacked || !this.feral) && this.pathToEntity == null) {
+			if (this.hasAttacked || this.target == null || this.pathToEntity != null) {
+				if ((!this.hasAttacked || this.feral) && this.pathToEntity == null && (this.chaotic || this.random.nextInt(80) == 0 || this.random.nextInt(80) == 0)) {
 					this.roamRandomPath();
 				}
 			} else {
@@ -140,8 +144,8 @@ public class BWSMonsterBase extends MobMonster {
 
 				if (this.target != null) {
 					this.lookAt(this.target, 30.0F, 30.0F);
-				}else if (this.chaotic) {
-					this.randomYawVelocity = (this.random.nextFloat() - 0.5F) * 20.0F;
+				}else if (this.crazy) {
+					this.randomYawVelocity = (this.random.nextFloat() - 0.5F) * 70.0F;
 
 					this.yRot = this.yRot + this.randomYawVelocity;
 					this.xRot = this.defaultPitch;
@@ -213,8 +217,8 @@ public class BWSMonsterBase extends MobMonster {
 			player = playerFar;
 		}
 
-		//return player != null && player.getGamemode().areMobsHostile() ? player : null;
-		return player;
+		return player != null && player.getGamemode().areMobsHostile() ? player : null;
+		//return player;
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.HitResult;
+import net.minecraft.core.util.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,6 +36,35 @@ import java.util.List;
 
 @Mixin(value = Minecraft.class, remap = false)
 public class MinecraftMixin implements IMinecraft {
+
+	@Unique
+	public Vec3 itemDummyPos = Vec3.getPermanentVec3(0, 0, 0);
+	@Unique
+	public Vec3 itemDummyRot = Vec3.getPermanentVec3(0, 0, 0);
+
+	@Override
+	public Vec3 getItemDummyPos() {
+		return this.itemDummyPos;
+	}
+
+	@Override
+	public void addToItemDummyPos(double x, double y, double z) {
+		this.itemDummyPos.x = this.itemDummyPos.x+x;
+		this.itemDummyPos.y = this.itemDummyPos.y+y;
+		this.itemDummyPos.z = this.itemDummyPos.z+z;
+	}
+
+	@Override
+	public Vec3 getItemDummyRot() {
+		return this.itemDummyRot;
+	}
+
+	@Override
+	public void addToItemDummyRot(double x, double y, double z) {
+		this.itemDummyRot.x = this.itemDummyRot.x+x;
+		this.itemDummyRot.y = this.itemDummyRot.y+y;
+		this.itemDummyRot.z = this.itemDummyRot.z+z;
+	}
 
 	@Shadow
 	public boolean inGameHasFocus;
@@ -245,7 +275,6 @@ public class MinecraftMixin implements IMinecraft {
 	}
 
 
-
 	@Inject(
 		method = "runTick()V",
 		at = @At(value = "HEAD"))
@@ -345,6 +374,7 @@ public class MinecraftMixin implements IMinecraft {
 	public int hotbarLock9(int i){
 		return this.combatModule.canInteract() ? i : 0;
 	}
+
 
 }
 

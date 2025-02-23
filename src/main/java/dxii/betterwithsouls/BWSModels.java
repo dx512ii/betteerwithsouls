@@ -2,8 +2,13 @@ package dxii.betterwithsouls;
 
 import dxii.betterwithsouls.entity.BWSMonsterBase;
 import dxii.betterwithsouls.entity.model.ModelZombieTest;
+import dxii.betterwithsouls.entity.render.BWSMobRendererBiped;
+import dxii.betterwithsouls.item.model.ItemDummyModel;
 import dxii.betterwithsouls.item.model.WeaponModelStandart;
 import dxii.betterwithsouls.mixin.accessor.IAEntityDispatcher;
+import dxii.betterwithsouls.util.animation.Animation;
+import dxii.betterwithsouls.util.animation.Frame;
+import dxii.betterwithsouls.util.animation.Key;
 import net.minecraft.client.render.EntityRenderDispatcher;
 import net.minecraft.client.render.TileEntityRenderDispatcher;
 import net.minecraft.client.render.block.color.BlockColorDispatcher;
@@ -39,6 +44,12 @@ public class BWSModels implements ModelEntrypoint {
 		ModelHelper.setItemModel(SHORTSWORD_STONE, () -> {
 			ItemModelStandard model = new WeaponModelStandart(SHORTSWORD_STONE, MOD_ID, false).setFull3D();
 			model.icon = TextureRegistry.getTexture(SHORTSWORD_STONE.namespaceID);
+			return model;
+		});
+
+		ModelHelper.setItemModel(ITEM_DUMMY, () -> {
+			ItemModelStandard model = new ItemDummyModel(ITEM_DUMMY, MOD_ID).setFull3D();
+			model.icon = TextureRegistry.getTexture(ITEM_DUMMY.namespaceID);
 			return model;
 		});
 	}

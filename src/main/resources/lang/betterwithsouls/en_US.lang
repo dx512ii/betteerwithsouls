@@ -4,6 +4,9 @@ item.betterwithsouls.tomahawk_stone.desc = Simple, yet deadly weapon, meant to b
 item.betterwithsouls.shortsword_stone.name= Stone Shortsword
 item.betterwithsouls.shortsword_stone.desc= Slay pesky enemies with this sharp stone blade!
 
+item.betterwithsouls.item_dummy.name= Item Dummy
+item.betterwithsouls.item_dummy.desc= !!DEBUG!! Poseable first person item for animation purposes..
+
 item.minecraft.tool_sword_stone.desc="removed :troll:"
 
 

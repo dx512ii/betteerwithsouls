@@ -7,22 +7,31 @@
     "_ExplosionMixin",
     "_WandMixin",
     "ChunkCacheMixin",
+    "EntityMixin",
     "ItemMixin",
     "MinecraftMixin",
     "MobMixin",
     "PlayerMixin",
     "WorldMixin",
     "accessor.IEntityAccessor",
-    "accessor.IMobAccessor"
+    "accessor.IMobAccessor",
+    "inventory.ContainerInventoryMixin",
+    "rendering.PlayerRendererMixin"
   ],
   "client": [
-    "CubeMixin",
     "GameSettingsMixin",
     "ScreenInventoryMixin",
     "accessor.IAEntityDispatcher",
     "accessor.IGuiAccessor",
+    "accessor.IItemModelAccessor",
     "accessor.IScreenAccessor",
-    "accessor.IScreenContainerAccessor"
+    "accessor.IScreenContainerAccessor",
+    "rendering.CubeMixin",
+    "rendering.MobRendererBipedMixin",
+    "rendering.MobRendererMixin",
+    "rendering.ModelBipedMixin",
+    "rendering.ModelPlayerMixin",
+    "rendering.ModelPlayerSlimMixin"
   ],
   "injectors": {
     "defaultRequire": 1

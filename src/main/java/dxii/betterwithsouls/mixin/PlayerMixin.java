@@ -3,11 +3,14 @@ package dxii.betterwithsouls.mixin;
 
 import dxii.betterwithsouls.BWSMain;
 import dxii.betterwithsouls.BWSUtils;
+import dxii.betterwithsouls.anims.BipedHumanoidAnimations;
+import dxii.betterwithsouls.interfaces.IEntity;
 import dxii.betterwithsouls.interfaces.IMob;
 import dxii.betterwithsouls.interfaces.IPlayer;
 import dxii.betterwithsouls.util.BWSDamageTypes;
 import dxii.betterwithsouls.util.DamageResistModule;
 import dxii.betterwithsouls.util.DynamicLight;
+import dxii.betterwithsouls.util.animation.AnimManager;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.tag.BlockTags;
@@ -48,6 +51,7 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 	}
 
 
+
 	/**
 	 * @author	yap
 	 * @reason	yappson
@@ -64,10 +68,9 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 	public void plyInit(CallbackInfo ci) {
 		if(BWSMain.dynLightEnabled.value && BWSMain.dynLightPlayer.value) {
 			dyn = BWSUtils.addDynamicLight(thisObject, 5, 20, -1, 0, 0);
-
-			DamageResistModule dResists = ((IMob)thisObject).bws$getMobResist();
-			dResists.setDefence(BWSDamageTypes.SLASH, 10);
 		}
+		DamageResistModule dResists = ((IMob)thisObject).bws$getMobResist();
+		dResists.setDefence(BWSDamageTypes.SLASH, 10);
 	}
 
 //	/**
@@ -148,6 +151,7 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 		} else {
 			this.swingProgressNew = 0;
 		}
+		updatePlayerLight();
 
 		((Mob)(Object)this).swingProgress = MathHelper.clamp(this.swingProgressNew / 8, 0, 1);
 	}
@@ -171,7 +175,6 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 
 			boolean lowEmit = !blockIsWater && stack.itemID == Blocks.TORCH_REDSTONE_ACTIVE.id()
 				|| stack.itemID == Items.DUST_GLOWSTONE.id
-//				|| stack.itemID == Blocks.COBBLE_NETHERRACK_IGNEOUS.id()
 				|| stack.itemID == Items.NETHERCOAL.id;
 			boolean medEmit = !blockIsWater && stack.itemID == Blocks.TORCH_COAL.id()
 				|| stack.itemID == Items.LANTERN_FIREFLY_GREEN.id
@@ -209,15 +212,16 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 	public int entAttackMixin(int i) {
 		return i > 2 ? i : 0;
 	}
+
 	@Inject(
 		method = "tick()V",
 		at = @At(value = "TAIL"))
 	public void tickMixin(CallbackInfo ci) {
-		updatePlayerLight();
 	}
 
-	@Unique
+	@Override
 	public void bws$setSwingSpeed(float speed){
 		this.swingSpeed = speed;
 	}
+
 }

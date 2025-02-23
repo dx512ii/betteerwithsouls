@@ -1,15 +1,8 @@
 package dxii.betterwithsouls.util;
 
-import dxii.betterwithsouls.BWSBlocks;
-import dxii.betterwithsouls.BWSConfig;
-import dxii.betterwithsouls.BWSUtils;
-import dxii.betterwithsouls.interfaces.IWorld;
 import dxii.betterwithsouls.item.ItemWeapon;
 import net.minecraft.client.entity.player.PlayerLocal;
-import net.minecraft.core.block.Blocks;
-import net.minecraft.core.block.material.Material;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
 
 public class CombatModule {
@@ -31,8 +24,7 @@ public class CombatModule {
 	public boolean holding;
 
 
-
-	public Vec3 oldLightBlockPos;
+	//public Vec3 oldLightBlockPos;
 
 	public CombatModule(World world, PlayerLocal player){
 		this.world = world;
@@ -85,10 +77,9 @@ public class CombatModule {
 
 	public void update(){
 		if(this.player == null || this.world == null) {
-			System.out.println("Combat Module error!!: either player or woeld is null!!");
+			System.out.println("Combat Module: error!! either player or world is null!!");
 			return;
 		}
-
 //
 //		if(dynLightDelay != 0){
 //			dynLightDelay--;
@@ -111,9 +102,6 @@ public class CombatModule {
 //		}
 
 		//this.worldObj.markBlockNeedsUpdate(x, y, z);
-
-
-
 		if(this.hitDelay != -1){
 			this.hitDelay--;
 		}if(this.hitDelay < -1){
@@ -165,7 +153,6 @@ public class CombatModule {
 					break;
 			}
 		}
-
 	}
 
 	public void attackAttempt(int type, ItemWeapon wep, ItemStack stack){
@@ -185,6 +172,7 @@ public class CombatModule {
 				if(lastHitTiming > 0) {
 					wep.attack1(stack, this.world, this.player, false);
 				}
+
 				break;
 			case 1:
 				this.hitTiming = wep.atkTiming2;

@@ -7,15 +7,25 @@ import dxii.betterwithsouls.BWSItems;
 import dxii.betterwithsouls.enums.EAccBonus;
 import dxii.betterwithsouls.interfaces.IInventory;
 import dxii.betterwithsouls.item.ItemAccessory;
+import dxii.betterwithsouls.item.ItemWeapon;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import net.minecraft.core.sound.SoundCategory;
+import net.minecraft.core.util.helper.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = ContainerInventory.class, remap = false)
 public class ContainerInventoryMixin implements IInventory {
+	@Shadow
+	public Player player;
+
 	@Unique
 	public ItemStack[] accInventory = new ItemStack[4];
 
@@ -27,7 +37,8 @@ public class ContainerInventoryMixin implements IInventory {
 		return this.accInventory;
 	}
 
-
+	@Shadow
+	protected int currentItem;
 
 
 	/**
@@ -88,4 +99,34 @@ public class ContainerInventoryMixin implements IInventory {
 			}
 		}
 	}
+
+	@Inject(
+		method = "setCurrentItemIndex",
+		at = @At(value = "FIELD", target = "Lnet/minecraft/core/player/inventory/container/ContainerInventory;currentItem:I"))
+	public void deployHolster(int index, boolean overrideLock, CallbackInfo ci){
+		ItemStack prevStack = thisObject.mainInventory[this.currentItem];
+		ItemStack currentStack = thisObject.mainInventory[index];
+		if (prevStack != null && prevStack.getItem() instanceof ItemWeapon) {
+			((ItemWeapon)prevStack.getItem()).holster(prevStack, this.player.world, this.player);
+		}
+		if (currentStack != null && currentStack.getItem() instanceof ItemWeapon){
+			((ItemWeapon)currentStack.getItem()).deploy(currentStack, this.player.world, this.player);
+		}
+	}
+
+	@Inject(
+		method = "changeCurrentItem",
+		at = @At(value = "FIELD", target = "Lnet/minecraft/core/player/inventory/container/ContainerInventory;currentItem:I", ordinal = 0))
+	public void deployHolster2(int i, CallbackInfo ci){
+		ItemStack prevStack = thisObject.mainInventory[this.currentItem];
+		ItemStack currentStack = thisObject.mainInventory[MathHelper.clamp(this.currentItem-i, 0, this.currentItem-i)];
+		if (prevStack != null && prevStack.getItem() instanceof ItemWeapon) {
+			((ItemWeapon)prevStack.getItem()).holster(prevStack, this.player.world, this.player);
+		}
+		if (currentStack != null && currentStack.getItem() instanceof ItemWeapon){
+			((ItemWeapon)currentStack.getItem()).deploy(prevStack, this.player.world, this.player);
+		}
+	}
+
+
 }

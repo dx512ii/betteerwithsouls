@@ -1,22 +1,20 @@
 package dxii.betterwithsouls;
 
+import dxii.betterwithsouls.interfaces.ICube;
 import dxii.betterwithsouls.interfaces.IWorld;
 import dxii.betterwithsouls.util.DynamicLight;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.util.helper.MathHelper;
-import net.minecraft.core.util.phys.HitResult;
 import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
 
 import javax.annotation.Nullable;
 
-import static net.minecraft.core.enums.LightLayer.Block;
+import static dxii.betterwithsouls.anims.BipedHumanoidAnimations.NULL_idle;
 
 public class BWSUtils {
-
-
 
 	public static void pushRelative(Entity entity, float right, float up, float forward, float amount) {
 		System.out.println(right);
@@ -120,4 +118,9 @@ public class BWSUtils {
 		}
 	}
 
+
+	public static void addBoxBlockbench(Cube cube, float posX, float posY, float posZ, int sizeX, int sizeY, int sizeZ, int pivotX, int pivotY, int pivotZ, float expandAmount){
+		//just to make code more readable and get rid of these goddamn casts (they look ugly)
+		((ICube)cube).addBoxBlockbench(posX, posY, posZ, sizeX, sizeY, sizeZ, pivotX, pivotY, pivotZ, expandAmount);
+	}
 }

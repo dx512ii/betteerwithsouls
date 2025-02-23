@@ -17,8 +17,6 @@ public class ItemMixin {
 	public static Item TOOL_SWORD_STONE;
 
 
-
-
 	@Inject(
 		method = "setupItems()V",
 		at = @At(value = "TAIL")

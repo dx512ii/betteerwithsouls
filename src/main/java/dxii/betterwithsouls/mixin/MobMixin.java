@@ -8,30 +8,32 @@ import dxii.betterwithsouls.mixin.accessor.IMobAccessor;
 import dxii.betterwithsouls.util.BWSDamageTypes;
 import dxii.betterwithsouls.util.DamageInfo;
 import dxii.betterwithsouls.util.DamageResistModule;
+import dxii.betterwithsouls.util.animation.AnimManager;
+import dxii.betterwithsouls.util.animation.Animation;
+import dxii.betterwithsouls.util.animation.Frame;
+import dxii.betterwithsouls.util.animation.Key;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.util.phys.Vec3;
+import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = Mob.class, remap = false)
 public class MobMixin implements IMob {
 
 	@Unique
-	public EMobAnim currentAnim;
-	@Unique
-	public EHoldType holdType;
-	@Unique
 	public Mob thisObject = (Mob)(Object)this;
-
 	@Unique
 	public DamageResistModule dResists = new DamageResistModule();
+
 
 	@Override
 	public void bws$setMobResist(DamageResistModule newresist){
@@ -42,25 +44,7 @@ public class MobMixin implements IMob {
 		return this.dResists;
 	}
 
-	@Override
-	public void bws$sendMobAnim(EMobAnim anim) {
-		this.currentAnim = anim;
-	}
 
-	@Override
-	public EMobAnim bws$getMobAnim() {
-		return this.currentAnim;
-	}
-
-	@Override
-	public void bws$setHoldType(EHoldType type) {
-		this.holdType = type;
-	}
-
-	@Override
-	public EHoldType bws$getHoldType() {
-		return this.holdType;
-	}
 //	@Override
 //	public boolean bws$hurt(Entity attacker, int damage, DamageType type){
 //		return thisObject.hurt(attacker,damage, type);
@@ -75,6 +59,14 @@ public class MobMixin implements IMob {
 //	public void hurtInject(Entity attacker, int damage, DamageType dtype, CallbackInfoReturnable<Boolean> cir) {
 //
 //	}
+
+	@Inject(
+		method = "baseTick",
+		at = @At(value = "HEAD")
+	)
+	public void mobTick(CallbackInfo ci){
+	}
+
 
 	//ill stick to using bws$receiveDamageInfo for my stuff,
 	//for the sake of compat ill redirect every vanilla hurt function to mine
@@ -104,7 +96,7 @@ public class MobMixin implements IMob {
 		at = @At(value = "FIELD", target = "net/minecraft/core/entity/Mob.heartsHalvesLife : I", ordinal = 1)
 	)
 	public int stopFlashingUDumass(Mob mob){
-		return ((IMobAccessor)mob).lastDamage() > 2 ? mob.heartsHalvesLife : 0;
+		return ((IMobAccessor)mob).lastDamage() >= 1 ? mob.heartsHalvesLife : 0;
 	}
 
 	@Unique
@@ -118,10 +110,7 @@ public class MobMixin implements IMob {
 				thisObject.z - atker.z);
 			dir = dir.normalize();
 
-			double coeff = 0.1;
-
-			System.out.println("complete: "+coeff*dinfo.getKnockback() * (dinfo.getDmg() + 1 - this.dResists.getPushResist()));
-			System.out.println("dmg - resist: "+(dinfo.getDmg() + 1 - this.dResists.getPushResist()));
+			double coeff = 0.015;
 
 			thisObject.push(
 				dir.x * coeff*dinfo.getKnockback() * (dinfo.getDmg() + 2 - this.dResists.getPushResist()),

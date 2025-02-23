@@ -2,12 +2,17 @@ package dxii.betterwithsouls.interfaces;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.Cube;
 
 @Environment(EnvType.CLIENT)
 public interface ICube {
 	String getName();
 	void setName(String name);
+	void decompile();
+
+	void setOffset(float x, float y, float z);
+	float getOffsetX();
+	float getOffsetY();
+	float getOffsetZ();
 
 	/**
 	 * add box to a cube using pos, rot, scale and pivot pos directly from blockbench cube, (bedrock entity model)

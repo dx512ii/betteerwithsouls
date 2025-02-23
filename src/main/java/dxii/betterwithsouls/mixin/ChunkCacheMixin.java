@@ -38,7 +38,6 @@ public class ChunkCacheMixin {
 			i1 = (int)light;
 		}
 
-
 		return this.worldObj.worldType.getBrightnessRamp()[i1];
 	}
 

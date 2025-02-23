@@ -9,7 +9,6 @@ import net.minecraft.client.gui.options.components.ToggleableOptionComponent;
 import net.minecraft.client.gui.options.data.OptionsPage;
 import net.minecraft.client.gui.options.data.OptionsPages;
 import net.minecraft.client.option.GameSettings;
-import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.OptionBoolean;
 import net.minecraft.client.option.OptionRange;
 import net.minecraft.client.render.texture.stitcher.TextureRegistry;
@@ -48,6 +47,7 @@ public class BWSMain implements ModInitializer, RecipeEntrypoint, GameStartEntry
 
 		BWSItems.initItems();
 		BWSBlocks.initBlocks();
+
     }
 
 	@Override
