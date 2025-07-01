@@ -1,6 +1,7 @@
 package dxii.betterwithsouls.util;
 
-import dxii.betterwithsouls.BWSMain;
+import dxii.betterwithsouls.BWSOptions;
+import dxii.betterwithsouls._BWSMain;
 import dxii.betterwithsouls.BWSUtils;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3;
@@ -10,12 +11,12 @@ import java.util.List;
 
 public class DynamicLightsModule {
 
-	public List<DynamicLight> lights = new ArrayList();
+	public List<DynamicLight> lights = new ArrayList<>();
 	private int updDelayTemp;
 
 
 	public void update(){
-		if(!BWSMain.dynLightEnabled.value){
+		if(!BWSOptions.dynLightEnabled.value){
 			for (DynamicLight light : lights) {
 				if (light == null || light.removed) {
 					lights.remove(light);
@@ -32,7 +33,7 @@ public class DynamicLightsModule {
 			updDelayTemp--;
 		}
 		if(updDelayTemp == 0) {
-			updDelayTemp = BWSMain.dynLightRate.getValueIndex()+1;
+			updDelayTemp = BWSOptions.dynLightRate.getValueIndex()+1;
 			for (DynamicLight light : lights) {
 				if (light == null || light.removed) {
 					lights.remove(light);
@@ -55,7 +56,7 @@ public class DynamicLightsModule {
 	}
 
 	public float getBrightness(int x, int y, int z){
-		if(!BWSMain.dynLightEnabled.value){
+		if(!BWSOptions.dynLightEnabled.value){
 			return 0;
 		}
 		float finalBright = 0;

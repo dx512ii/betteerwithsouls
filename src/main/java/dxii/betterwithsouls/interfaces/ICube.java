@@ -10,9 +10,7 @@ public interface ICube {
 	void decompile();
 
 	void setOffset(float x, float y, float z);
-	float getOffsetX();
-	float getOffsetY();
-	float getOffsetZ();
+	void setRotationOffset(float x, float y, float z);
 
 	/**
 	 * add box to a cube using pos, rot, scale and pivot pos directly from blockbench cube, (bedrock entity model)

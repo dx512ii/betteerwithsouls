@@ -1,6 +1,7 @@
 package dxii.betterwithsouls.item.weapon;
 
 import dxii.betterwithsouls.enums.EMobAnim;
+import dxii.betterwithsouls.enums.EReinforcementType;
 import dxii.betterwithsouls.interfaces.IMob;
 import dxii.betterwithsouls.interfaces.IPlayer;
 import dxii.betterwithsouls.item.ItemWeapon;
@@ -9,8 +10,10 @@ import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.world.World;
 
 public class WeaponTomahawk extends ItemWeapon {
-	public WeaponTomahawk(String name, String namespaceId, int id) {
-		super(name, namespaceId, id);
+	public WeaponTomahawk(String name, int id) {
+		super(name, id);
+
+		this.reinforcementType = EReinforcementType.NORMAL;
 
 		atkDelay1 = 4;
 		atkDelay2 = 3;
@@ -34,13 +37,11 @@ public class WeaponTomahawk extends ItemWeapon {
 	@Override
 	public void attack1(ItemStack itemstack, World world, Player entityplayer, boolean timed){
 		if(timed){
-			//System.out.println("attack1 timed!");
-			((IPlayer) entityplayer).bws$setSwingSpeed(0.5f);
+			adjustSwingSpeed(entityplayer, 0.5f);
 
 		}else {
 			entityplayer.swingItem();
-			((IPlayer) entityplayer).bws$setSwingSpeed(0.8f);
-			//System.out.println("attack1");
+			adjustSwingSpeed(entityplayer, 0.8f);
 		}
 	}
 
@@ -48,7 +49,7 @@ public class WeaponTomahawk extends ItemWeapon {
 	@Override
 	public void attack2(ItemStack itemstack, World world, Player entityplayer, boolean timed){
 		if(timed) {
-			//((IMob) entityplayer).bws$sendMobAnim(EMobAnim.ATTACK1);
+
 		}else{
 
 		}

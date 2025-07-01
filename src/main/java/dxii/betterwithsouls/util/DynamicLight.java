@@ -2,11 +2,12 @@ package dxii.betterwithsouls.util;
 
 
 import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.world.World;
 
 public class DynamicLight {
 	public boolean removed;
-
+	public static final DynamicLight NULL_LIGHT = new DynamicLight(0, 0, 0, null).setBrightness(0);
 	//coords & offsets
 	public int x;
 	public int xO;
@@ -63,17 +64,21 @@ public class DynamicLight {
 			}
 		}else if(!fading){
 			this.remove();
-			markBlocksNearby(false);
 		}else{
 			if(this.radius == 0){
 				this.remove();
-				markBlocksNearby(false);
 			}else {
+				markBlocksNearby(false);
 				this.radius--;
 			}
 		}
 
 
+	}
+
+	public DynamicLight setBrightness(int brightness){
+		this.brightness = brightness;
+		return this;
 	}
 
 	public void markBlocksNearby(boolean force){
@@ -82,8 +87,6 @@ public class DynamicLight {
 		if(this.brightness <= 0 && !force){
 			return;
 		}
-
-		//System.out.println(brightness);
 
 		int plyx = this.x;
 		int plyy = this.y;
@@ -108,6 +111,7 @@ public class DynamicLight {
 	}
 
 	public void remove(){
+		markBlocksNearby(false);
 		this.removed = true;
 	}
 }

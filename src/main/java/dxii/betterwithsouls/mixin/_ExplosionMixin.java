@@ -1,7 +1,8 @@
 package dxii.betterwithsouls.mixin;
 
 
-import dxii.betterwithsouls.BWSMain;
+import dxii.betterwithsouls.BWSOptions;
+import dxii.betterwithsouls._BWSMain;
 import dxii.betterwithsouls.BWSUtils;
 import dxii.betterwithsouls.util.DynamicLight;
 import net.minecraft.core.util.helper.MathHelper;
@@ -28,8 +29,8 @@ public class _ExplosionMixin {
 	@Inject(
 		method = "<init>",
 		at = @At(value = "TAIL"))
-	public void plyInit(CallbackInfo ci) {
-		if(BWSMain.dynLightExplosions.value) {
+	public void initStuff(CallbackInfo ci) {
+		if(BWSOptions.dynLightExplosions.value) {
 			dyn = BWSUtils.addDynamicLightFading(this.worldObj, (int) MathHelper.clamp(thisObject.explosionSize, 2, 10) * 2, 31, (int) thisObject.explosionX, (int) thisObject.explosionY, (int) thisObject.explosionZ);
 		}
 	}

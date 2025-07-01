@@ -1,0 +1,82 @@
+{
+  "sword.swing": {
+    "subtitle": "subtitles.sword.swing",
+    "sounds": [
+      "broadsword_swing.ogg"
+    ]
+  },"shield.swing": {
+    "subtitle": "subtitles.shield.swing",
+    "sounds": [
+      "shield_swing.ogg"
+    ]
+  },"block.blade": {
+    "subtitle": "subtitles.block.blade",
+    "sounds": [
+      "block_blade.ogg"
+    ]
+  },"block.blade2": {
+    "subtitle": "subtitles.block.blade",
+    "sounds": [
+      "block_blade2.ogg"
+    ]
+  },"block.blade3": {
+    "subtitle": "subtitles.block.blade",
+    "sounds": [
+      "block_blade3.ogg"
+    ]
+  },"block.wood": {
+    "subtitle": "subtitles.block.blade",
+    "sounds": [
+      "shield_bash_wood.ogg"
+    ]
+  },
+  "dmg.fire": {
+    "subtitle": "subtitles.dmg.fire",
+    "sounds": [
+      "dmg_fire.ogg"
+    ]
+  },
+  "dmg.flesh": {
+    "subtitle": "subtitles.dmg.flesh",
+    "sounds": [
+      "dmg_flesh.ogg"
+    ]
+  },
+  "dmg.light": {
+    "subtitle": "subtitles.dmg.light",
+    "sounds": [
+      "dmg_light.ogg",
+	  "dmg_light2.ogg"
+    ]
+  },
+  "dmg.dark": {
+    "subtitle": "subtitles.dmg.dark",
+    "sounds": [
+      "dmg_dark.ogg"
+    ]
+  },
+  "ring.break": {
+    "subtitle": "subtitles.ring.break",
+    "sounds": [
+      "break_ring.ogg"
+    ]
+  },
+  "humanity": {
+    "subtitle": "subtitles.humanity",
+    "sounds": [
+      "humanity.ogg"
+    ]
+  },
+  "parry": {
+    "subtitle": "subtitles.parry",
+    "sounds": [
+      "parry.ogg"
+    ]
+  },
+  "parry2": {
+    "subtitle": "subtitles.parry",
+    "sounds": [
+      "ds2_parry.ogg"
+    ]
+  }
+}

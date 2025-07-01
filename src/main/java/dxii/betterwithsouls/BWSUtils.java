@@ -1,20 +1,29 @@
 package dxii.betterwithsouls;
 
+import dxii.betterwithsouls.enums.EAccBonus;
 import dxii.betterwithsouls.interfaces.ICube;
+import dxii.betterwithsouls.interfaces.IInventory;
 import dxii.betterwithsouls.interfaces.IWorld;
+import dxii.betterwithsouls.item.ItemAccessory;
 import dxii.betterwithsouls.util.DynamicLight;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
+import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
 
-import javax.annotation.Nullable;
-
-import static dxii.betterwithsouls.anims.BipedHumanoidAnimations.NULL_idle;
+import java.util.Random;
 
 public class BWSUtils {
+
+	public static final Random rand = new Random();
+
+	public static int dmgAgainstResist(int dmg, int resist){
+		return MathHelper.clamp(dmg - resist, 0, dmg);
+	}
 
 	public static void pushRelative(Entity entity, float right, float up, float forward, float amount) {
 		System.out.println(right);
@@ -51,34 +60,90 @@ public class BWSUtils {
 	public static double abs(double i){
 		return i < 0 ? -i : i;
 	}
+	public static double clampSize(double num, double min, double max){
+		double retNum = Math.abs(num);
+		retNum = MathHelper.clamp(retNum, min, max);
+		return num < 0 ? -retNum : retNum;
+	}
 
 	/*
 	ENTITY STUFF
 	 */
+	public static Vec3 getEntityViewVec(Entity ent){
+		float pitch;
+		float yaw;
+		float xzLen;
+		float x;
 
-	public static double getEntitiesLookDot(Mob ent1, Mob ent2){
-		return DotProduct(ent1.getLookAngle(), ent2.getLookAngle());
+		float xrot = MathHelper.clamp(ent.xRot, -45, 45);
+
+		pitch = MathHelper.cos(-ent.yRot * 0.017453292F - 3.1415927F);
+		yaw = MathHelper.sin(-ent.yRot * 0.017453292F - 3.1415927F);
+		xzLen = -MathHelper.cos(-xrot * 0.017453292F);
+		x = MathHelper.sin(-xrot * 0.017453292F);
+		return Vec3.getTempVec3(yaw * xzLen, x, pitch * xzLen);
 	}
 
-	public static boolean getEntitiesFacing(Mob ent1, Mob ent2){
+	public static boolean canReachEntity(Entity ent1, Entity ent2, double distance){
+		double d = ent1.x - ent2.x;
+		double d1 = ent1.z - ent2.z;
+		float f = MathHelper.sqrt(d * d + d1 * d1);
+
+		double f1 = d / (double)f;
+		double f2 = d1 / (double)f;
+
+
+		f1 *= -ent2.bbWidth*.5;
+		f2 *= -ent2.bbWidth*.5;
+
+		double entX = ent2.x-f1;
+		double entZ = ent2.z-f2;
+		
+		boolean dist = distance * distance >= ent1.distanceToSqr(entX, ent2.y+ent2.bbHeight, entZ);
+		boolean dist2 = distance * distance >= ent1.distanceToSqr(entX, ent2.y-ent2.bbHeight, entZ);
+		boolean dist3 = distance * distance >= ent1.distanceToSqr(entX, ent2.y, entZ);
+
+		return dist || dist2 || dist3;
+	}
+
+	public static double getEntitiesLookDot(Entity ent1, Entity ent2){
+		return DotProduct(getEntityViewVec(ent1), getEntityViewVec(ent2));
+	}
+
+	public static boolean getEntitiesFacing(Entity ent1, Entity ent2){
 		return getEntitiesLookDot(ent1, ent2) < -0.6;
 	}
 
-	public static double getDotToEntity(Mob entLooking, Entity entLooked){
-		Vec3 dirToEntLooked = entLooking.getPosition(1, false).add( -entLooked.x, -entLooked.y, -entLooked.z);
+	public static double getDotToEntity(Mob entLooking, Entity entLooked, boolean ignorey){
+		Vec3 dirToEntLooked = entLooking.getPosition(1, true).add( -entLooked.x, -entLooked.y, -entLooked.z).add( 0, -entLooked.bbHeight*.5, 0);
+		Vec3 viewvec = getEntityViewVec(entLooking);
+		if(ignorey){
+			viewvec.y = 0;
+			viewvec.normalize();
+		}
 
-		return DotProduct(entLooking.getLookAngle(), dirToEntLooked.normalize());
+		return DotProduct(viewvec, dirToEntLooked.normalize());
 	}
 
 	public static boolean isEntityInFront(Mob entLooking, Entity entLooked){
-		return getDotToEntity(entLooking, entLooked) < -0.5;
+
+		return getDotToEntity(entLooking, entLooked, true) <= -0.5;
+	}
+	public static boolean isEntityInFrontWide(Mob entLooking, Entity entLooked){
+		return getDotToEntity(entLooking, entLooked, true) < -0.31;
 	}
 
 	/*
 	DYNAMIC LIGHTS
 	 */
 	public static DynamicLight addDynamicLight(Entity ent, int radius, int brightness, int xOffset, int yOffset, int zOffset){
+		if(ent.world == null){
+			return DynamicLight.NULL_LIGHT;
+		}
+
 		if(((IWorld)ent.world).bws$getDynLights() != null) {
+			System.out.println("player dynamic light init!");
+
 			DynamicLight dyn = new DynamicLight(ent, ent.world);
 			dyn.x = (int) ent.x;
 			dyn.y = (int) ent.y;
@@ -123,4 +188,22 @@ public class BWSUtils {
 		//just to make code more readable and get rid of these goddamn casts (they look ugly)
 		((ICube)cube).addBoxBlockbench(posX, posY, posZ, sizeX, sizeY, sizeZ, pivotX, pivotY, pivotZ, expandAmount);
 	}
+
+	public static boolean playerHasAccessoryEffect(Player player, EAccBonus bonus){
+		boolean hasEffect = false;
+
+		ItemStack[] accInv = ((IInventory) ((player).inventory)).bws$getAccInv();
+		if (accInv[0] != null && ((ItemAccessory) (accInv[0].getItem())).bonus == bonus) {
+			hasEffect = true;
+		} else if (accInv[1] != null && ((ItemAccessory) (accInv[1].getItem())).bonus == bonus) {
+			hasEffect = true;
+		} else if (accInv[2] != null && ((ItemAccessory) (accInv[2].getItem())).bonus == bonus) {
+			hasEffect = true;
+		} else if (accInv[3] != null && ((ItemAccessory) (accInv[3].getItem())).bonus == bonus) {
+			hasEffect = true;
+		}
+
+		return hasEffect;
+	}
+
 }
