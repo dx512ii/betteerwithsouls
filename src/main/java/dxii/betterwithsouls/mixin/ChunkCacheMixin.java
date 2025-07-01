@@ -1,11 +1,6 @@
 package dxii.betterwithsouls.mixin;
 
-import dxii.betterwithsouls.BWSConfig;
-import dxii.betterwithsouls.BWSUtils;
 import dxii.betterwithsouls.interfaces.IWorld;
-import net.minecraft.core.entity.player.Player;
-import net.minecraft.core.util.helper.MathHelper;
-import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.chunk.ChunkCache;
 import org.spongepowered.asm.mixin.*;
@@ -42,6 +37,7 @@ public class ChunkCacheMixin {
 	}
 
 	/**
+	 * @author eea
 	 * @reason for the love of dynamic lights
 	 */
 	@Overwrite

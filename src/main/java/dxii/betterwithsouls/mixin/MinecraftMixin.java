@@ -1,6 +1,7 @@
 package dxii.betterwithsouls.mixin;
 
 
+import dxii.betterwithsouls.BWSOptions;
 import dxii.betterwithsouls.interfaces.IMinecraft;
 import dxii.betterwithsouls.item.ItemWeapon;
 import dxii.betterwithsouls.util.CombatModule;
@@ -13,6 +14,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.player.controller.PlayerController;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.WorldClient;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import net.minecraft.core.util.helper.Axis;
@@ -42,6 +44,7 @@ public class MinecraftMixin implements IMinecraft {
 	@Unique
 	public Vec3 itemDummyRot = Vec3.getPermanentVec3(0, 0, 0);
 
+
 	@Override
 	public Vec3 getItemDummyPos() {
 		return this.itemDummyPos;
@@ -64,6 +67,16 @@ public class MinecraftMixin implements IMinecraft {
 		this.itemDummyRot.x = this.itemDummyRot.x+x;
 		this.itemDummyRot.y = this.itemDummyRot.y+y;
 		this.itemDummyRot.z = this.itemDummyRot.z+z;
+	}
+
+	@Override
+	public void resetItemDummy() {
+		this.itemDummyPos.x = 0;
+		this.itemDummyPos.y = 0;
+		this.itemDummyPos.z = 0;
+		this.itemDummyRot.x = 0;
+		this.itemDummyRot.y = 0;
+		this.itemDummyRot.z = 0;
 	}
 
 	@Shadow
@@ -97,77 +110,68 @@ public class MinecraftMixin implements IMinecraft {
 	 * @reason for the love of god
 	 */
 	@Overwrite
-	public void clickMouse(int clickType, boolean attack, boolean repeat){
-		if(
-			this.thePlayer.getHeldItem() != null
-			&& this.thePlayer.getHeldItem().getItem() instanceof ItemWeapon
-		){
-
+	private void clickMouse(int clickType, boolean attack, boolean repeat){
+		if(this.thePlayer.getHeldItem() != null && this.thePlayer.getHeldItem().getItem() instanceof ItemWeapon){
 			ItemWeapon wep = (ItemWeapon) this.thePlayer.getHeldItem().getItem();
 
 			if(clickType == 0){
 				if(wep.atk1hold){
 					combatModule.holdAttempt(0, wep, this.thePlayer.getHeldItem());
 				}
-			}
-			else if(objectMouseOver != null){
-					boolean flag = true;
-					int blockX = this.objectMouseOver.x;
-					int blockY = this.objectMouseOver.y;
-					int blockZ = this.objectMouseOver.z;
-					Side side = this.objectMouseOver.side;
-					double yPlacedx = this.objectMouseOver.location.y - (double) this.objectMouseOver.y;
-					double xPlacedx;
-					if (side.getAxis() == Axis.X) {
-						xPlacedx = this.objectMouseOver.location.x - (double) this.objectMouseOver.x;
-					} else if (side.getAxis() == Axis.Z) {
-						xPlacedx = this.objectMouseOver.location.z - (double) this.objectMouseOver.z;
-					} else {
-						xPlacedx = this.objectMouseOver.location.x - (double) this.objectMouseOver.x;
-					}
+			}else if(!combatModule.holding && objectMouseOver != null){
+				int blockX = this.objectMouseOver.x;
+				int blockY = this.objectMouseOver.y;
+				int blockZ = this.objectMouseOver.z;
+				Side side = this.objectMouseOver.side;
+				double yPlacedx = this.objectMouseOver.location.y - (double) this.objectMouseOver.y;
+				double xPlacedx;
+				if (side.getAxis() == Axis.X) {
+					xPlacedx = this.objectMouseOver.location.x - (double) this.objectMouseOver.x;
+				} else if (side.getAxis() == Axis.Z) {
+					xPlacedx = this.objectMouseOver.location.z - (double) this.objectMouseOver.z;
+				} else {
+					xPlacedx = this.objectMouseOver.location.x - (double) this.objectMouseOver.x;
+				}
 
-					ItemStack stackx = this.thePlayer.inventory.getCurrentItem();
-					int numItemsInStackx = stackx == null ? 0 : stackx.stackSize;
-					if (this.playerController.useItemOn(this.thePlayer, this.currentWorld, stackx, blockX, blockY, blockZ, side, xPlacedx, yPlacedx)) {
-						flag = false;
-						this.playerController.swingItem(false);
-					}else if(wep.atk2hold){
-						combatModule.holdAttempt(1, wep, this.thePlayer.getHeldItem());
-					}
-					if (stackx == null) {
-						return;
-					}
-					if (stackx.stackSize <= 0) {
-						this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.getCurrentItemIndex()] = null;
-					} else if (stackx.stackSize != numItemsInStackx) {
-						this.worldRenderer.itemRenderer.resetEquippedProgress();
-					}
-
-					if (flag) {
-						ItemStack itemstack = this.thePlayer.inventory.getCurrentItem();
-						if (itemstack != null && this.playerController.useItem(this.thePlayer, this.currentWorld, itemstack)) {
-							this.worldRenderer.itemRenderer.resetEquippedProgress();
-						}
-					}
+				ItemStack stackx = this.thePlayer.inventory.getCurrentItem();
+				int numItemsInStackx = stackx == null ? 0 : stackx.stackSize;
+				if (this.playerController.useItemOn(this.thePlayer, this.currentWorld, stackx, blockX, blockY, blockZ, side, xPlacedx, yPlacedx)) {
+					this.playerController.swingItem(false);
 				}else if(wep.atk2hold){
 					combatModule.holdAttempt(1, wep, this.thePlayer.getHeldItem());
 				}
-
-
+				if (stackx == null) {
+					return;
+				}
+				if (stackx.stackSize <= 0) {
+					this.thePlayer.inventory.mainInventory[this.thePlayer.inventory.getCurrentItemIndex()] = null;
+				} else if (stackx.stackSize != numItemsInStackx) {
+					this.worldRenderer.itemRenderer.resetEquippedProgress();
+				}
+			}else if(wep.atk2hold){
+				combatModule.holdAttempt(1, wep, this.thePlayer.getHeldItem());
+			}
 		}else {//standart click logic
 			defaultClick(clickType, attack, repeat);
 		}
 	}
 
-
+	@Inject(
+		method = "mineBlocks",
+		at = @At(value = "HEAD"), cancellable = true)
+	public void miningNah(int i, boolean flag, CallbackInfo ci){
+		if(this.thePlayer.getHeldItem() != null && this.thePlayer.getHeldItem().getItem() instanceof ItemWeapon){
+			ci.cancel();
+		}
+	}
 
 
 	@Unique
 	public void defaultClick(int clickType, boolean attack, boolean repeat){
 		this.mouseTicksRan = this.ticksRan;
 		boolean flag = true;
-		if (this.objectMouseOver == null) {
-			if (this.thePlayer.world != null || this.gameSettings.easyBridge.value && clickType == 1 && !(this.thePlayer.xRot < 45.0F)) {
+		if (this.objectMouseOver == null && this.thePlayer.world != null) {
+			if (this.gameSettings.easyBridge.value && clickType == 1 && !(this.thePlayer.xRot < 45.0F)) {
 				List<AABB> cubes = this.thePlayer.world.getCubes(this.thePlayer, this.thePlayer.bb.cloneMove(0.0, -1.0, 0.0));
 				if (!cubes.isEmpty()) {
 					AABB cube = cubes.get(0);
@@ -217,7 +221,7 @@ public class MinecraftMixin implements IMinecraft {
 			if (clickType == 0 && attack) {
 				this.playerController.swingItem(true);
 			}
-		} else if (this.objectMouseOver.hitType == HitResult.HitType.ENTITY) {
+		} else if (this.objectMouseOver != null && this.objectMouseOver.hitType == HitResult.HitType.ENTITY) {
 			if (clickType == 0 && attack) {
 				this.playerController.swingItem(true);
 				this.playerController.attack(this.thePlayer, this.objectMouseOver.entity);
@@ -226,7 +230,7 @@ public class MinecraftMixin implements IMinecraft {
 			if (clickType == 1 && this.playerController.interact(this.thePlayer, this.objectMouseOver.entity)) {
 				flag = false;
 			}
-		} else if (this.objectMouseOver.hitType == HitResult.HitType.TILE) {
+		} else if (this.objectMouseOver != null && this.objectMouseOver.hitType == HitResult.HitType.TILE) {
 			int blockX = this.objectMouseOver.x;
 			int blockY = this.objectMouseOver.y;
 			int blockZ = this.objectMouseOver.z;
@@ -275,6 +279,7 @@ public class MinecraftMixin implements IMinecraft {
 	}
 
 
+
 	@Inject(
 		method = "runTick()V",
 		at = @At(value = "HEAD"))
@@ -282,19 +287,27 @@ public class MinecraftMixin implements IMinecraft {
 		if(!this.isGamePaused && this.thePlayer != null && this.currentWorld != null) {
 
 			combatModule.update();
-			combatModule.player = this.thePlayer;
-			combatModule.world = this.currentWorld;
+			if(combatModule.player == null) {
+				combatModule.player = this.thePlayer;
+			}
+			if(combatModule.world == null) {
+				combatModule.world = this.currentWorld;
+			}
+
 
 			boolean mouse1 = this.gameSettings.keyAttack.isPressed() || this.controllerInput != null && this.controllerInput.buttonRightTrigger.isPressed();
 			boolean mouse2 = this.gameSettings.keyInteract.isPressed() || this.controllerInput != null && this.controllerInput.buttonLeftTrigger.isPressed();
 
-			if (!combatModule.holding && this.thePlayer.getHeldItem() != null) {
+			if (!combatModule.holding && this.thePlayer.getHeldItem() != null && this.inGameHasFocus) {
 				if(this.thePlayer.getHeldItem().getItem() instanceof ItemWeapon) {
 					ItemWeapon wep = (ItemWeapon) this.thePlayer.getHeldItem().getItem();
+					if(this.inGameHasFocus && BWSOptions.keyParry.isPressed()){
+						combatModule.attackAttempt(2, wep, this.thePlayer.getHeldItem());
+					}
 
-					if (this.inGameHasFocus && mouse1 && !wep.atk1hold) {
+					if (mouse1 && !wep.atk1hold) {
 						combatModule.attackAttempt(0, wep, this.thePlayer.getHeldItem());
-					} else if (this.inGameHasFocus && mouse2 && !wep.atk2hold) {
+					} else if (mouse2 && !wep.atk2hold) {
 						if (this.objectMouseOver != null && this.objectMouseOver.entity != null) {
 							if (!this.playerController.interact(this.thePlayer, this.objectMouseOver.entity)) {
 								combatModule.attackAttempt(1, wep, this.thePlayer.getHeldItem());
@@ -311,7 +324,18 @@ public class MinecraftMixin implements IMinecraft {
 		}
 	}
 
-
+	@Inject(
+		method = "respawn",
+		at = @At(value = "TAIL"))
+	public void respawnAdditional(boolean multiplayer, int targetDimension, CallbackInfo ci){
+		this.combatModule.respawn(currentWorld, thePlayer);
+	}
+	@Inject(
+		method = "changeWorld(Lnet/minecraft/client/world/WorldClient;Ljava/lang/String;Lnet/minecraft/core/entity/player/Player;)V",
+		at = @At(value = "TAIL"))
+	public void changeWorldAdditional(WorldClient world, String loadingTitle, Player player, CallbackInfo ci){
+		this.combatModule.respawn(currentWorld, thePlayer);
+	}
 	//hotbar locking when player attacks
 	@Redirect(
 		method = "checkBoundInputs(Lnet/minecraft/client/input/InputDevice;)Z",

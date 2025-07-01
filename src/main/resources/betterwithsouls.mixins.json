@@ -4,11 +4,14 @@
   "package": "dxii.betterwithsouls.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "_ArrowMixin",
     "_ExplosionMixin",
     "_WandMixin",
     "ChunkCacheMixin",
     "EntityMixin",
-    "ItemMixin",
+    "FuckYouSlimeMixin",
+    "ItemsMixin",
+    "ItemStackMixin",
     "MinecraftMixin",
     "MobMixin",
     "PlayerMixin",
@@ -16,22 +19,20 @@
     "accessor.IEntityAccessor",
     "accessor.IMobAccessor",
     "inventory.ContainerInventoryMixin",
-    "rendering.PlayerRendererMixin"
+    "inventory.MenuInventoryMixin"
   ],
   "client": [
     "GameSettingsMixin",
-    "ScreenInventoryMixin",
+    "PlayerControllerMixin",
     "accessor.IAEntityDispatcher",
     "accessor.IGuiAccessor",
-    "accessor.IItemModelAccessor",
     "accessor.IScreenAccessor",
     "accessor.IScreenContainerAccessor",
+    "inventory.ScreenInventoryMixin",
+    "rendering.CameraMixin",
     "rendering.CubeMixin",
-    "rendering.MobRendererBipedMixin",
-    "rendering.MobRendererMixin",
-    "rendering.ModelBipedMixin",
-    "rendering.ModelPlayerMixin",
-    "rendering.ModelPlayerSlimMixin"
+    "rendering.ItemModelMapMixin",
+    "rendering.ItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

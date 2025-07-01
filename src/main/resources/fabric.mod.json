@@ -19,25 +19,25 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-			"dxii.betterwithsouls.BWSMain"
+      "dxii.betterwithsouls._BWSMain"
     ],
 		"beforeGameStart": [
-			"dxii.betterwithsouls.BWSMain"
+          "dxii.betterwithsouls._BWSMain"
 		],
 		"beforeClientStart": [
-			"dxii.betterwithsouls.BWSMain"
+          "dxii.betterwithsouls._BWSMain"
 		],
 		"afterClientStart": [
-			"dxii.betterwithsouls.BWSMain"
+          "dxii.betterwithsouls._BWSMain"
 		],
 		"afterGameStart": [
-			"dxii.betterwithsouls.BWSMain"
+          "dxii.betterwithsouls._BWSMain"
 		],
 		"initModels": [
-			"dxii.betterwithsouls.BWSModels"
+			"dxii.betterwithsouls.BWSEntitiesAndModels"
 		],
 		"recipesReady": [
-			"dxii.betterwithsouls.BWSMain"
+          "dxii.betterwithsouls._BWSMain"
 		]
 	},
   "mixins": [

@@ -1,26 +1,29 @@
 package dxii.betterwithsouls.mixin;
 
 
-import dxii.betterwithsouls.BWSMain;
+import dxii.betterwithsouls.BWSConfig;
+import dxii.betterwithsouls.BWSOptions;
 import dxii.betterwithsouls.BWSUtils;
-import dxii.betterwithsouls.anims.BipedHumanoidAnimations;
-import dxii.betterwithsouls.interfaces.IEntity;
 import dxii.betterwithsouls.interfaces.IMob;
 import dxii.betterwithsouls.interfaces.IPlayer;
-import dxii.betterwithsouls.util.BWSDamageTypes;
+import dxii.betterwithsouls.item.BWSItemArmor;
+import dxii.betterwithsouls.item.ItemWeapon;
 import dxii.betterwithsouls.util.DamageResistModule;
 import dxii.betterwithsouls.util.DynamicLight;
-import dxii.betterwithsouls.util.animation.AnimManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.block.tag.BlockTags;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.enums.EnumSleepStatus;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.item.Items;
+import net.minecraft.core.player.inventory.container.ContainerInventory;
 import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.World;
+import net.minecraft.core.world.chunk.ChunkCoordinates;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = Player.class, remap = false)
 public abstract class PlayerMixin extends Mob implements IPlayer {
@@ -42,6 +46,13 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 	public float swingSpeed = 1;
 	@Unique
 	public Player thisObject = (Player)(Object)this;
+	@Unique
+	public float loadDisplay;
+
+	@Override
+	public float getLoadDisplay() {
+		return loadDisplay;
+	}
 
 	@Unique
 	public DynamicLight dyn;
@@ -50,79 +61,58 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 		super(world);
 	}
 
+	@Shadow
+	protected float baseSpeed;
+	@Shadow
+	protected float baseFlySpeed;
 
 
-	/**
-	 * @author	yap
-	 * @reason	yappson
-	 */
-	@Overwrite
-	public void swingItem() {
+
+	@Shadow
+	public ContainerInventory inventory;
+
+	@Inject(
+		method = "swingItem",
+		at = @At(value = "TAIL"))
+	public void swingItem(CallbackInfo ci) {
 		this.swingProgressNew = 0;
 		this.isSwinging = true;
+	}
+	@Inject(
+		method = "sleepInBedAt",
+		at = @At(value = "RETURN"))
+	public void bedObstructQOL(int x, int y, int z, CallbackInfoReturnable<EnumSleepStatus> cir){
+		Minecraft mc = Minecraft.getMinecraft();
+		ChunkCoordinates spawnCoordinates;
+		ChunkCoordinates bedSpawnCoordinates;
+		if (mc.thePlayer != null && !mc.isMultiplayerWorld()) {
+			spawnCoordinates = mc.thePlayer.getPlayerSpawnCoordinate();
+			if (spawnCoordinates != null) {
+				bedSpawnCoordinates = Player.getValidBedSpawnCoordinates(mc.currentWorld, spawnCoordinates);
+				if (bedSpawnCoordinates == null) {
+					mc.thePlayer.sendTranslatedChatMessage("bed.isObstructed");
+				}
+			}
+		}
+	}
+	@Inject(
+		method = "dropPlayerItemWithRandomChoice",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/core/entity/player/Player;addStat(Lnet/minecraft/core/achievement/stat/Stat;I)V"))
+	public void dropAdditional(ItemStack itemstack, boolean flag, CallbackInfo ci){
+		if(itemstack.getItem() instanceof ItemWeapon){
+			((ItemWeapon)itemstack.getItem()).holster(itemstack, thisObject.world, thisObject);
+		}
 	}
 
 	@Inject(
 		method = "<init>",
 		at = @At(value = "TAIL"))
 	public void plyInit(CallbackInfo ci) {
-		if(BWSMain.dynLightEnabled.value && BWSMain.dynLightPlayer.value) {
-			dyn = BWSUtils.addDynamicLight(thisObject, 5, 20, -1, 0, 0);
-		}
-		DamageResistModule dResists = ((IMob)thisObject).bws$getMobResist();
-		dResists.setDefence(BWSDamageTypes.SLASH, 10);
+		dyn = BWSUtils.addDynamicLight(thisObject, 0, 0, -1, 0, -1);
+
+		DamageResistModule dResists = ((IMob)thisObject).getMobResist();
 	}
 
-//	/**
-//	 * @author	yap
-//	 * @reason	yappson
-//	 */
-//	@Overwrite
-//	public boolean hurt(Entity attacker, int damage, DamageType type) {
-//		((IMobAccessor)thisObject).setEntityAge(0);
-//		if (thisObject.getHealth() <= 0) {
-//			return false;
-//		} else if (thisObject.gamemode.isPlayerInvulnerable()) {
-//			return false;
-//		} else {
-//			if (thisObject.isPlayerSleeping() && !thisObject.world.isClientSide) {
-//				thisObject.wakeUpPlayer(true, true);
-//			}
-//
-//			if (attacker instanceof MobMonster || attacker instanceof ProjectileArrow) {
-//				switch (thisObject.world.getDifficulty()) {
-//					case PEACEFUL:
-//						damage = 0;
-//						break;
-//					case EASY:
-//						damage = damage / 3 + 1;
-//						break;
-//					case HARD:
-//						damage = damage * 3 / 2;
-//				}
-//			}
-//
-//			Entity blamedAttacker = attacker;
-//			if (damage == 0 && !(attacker instanceof MobSnowman)) {
-//				return false;
-//			} else {
-//				if (attacker instanceof ProjectileArrow && ((ProjectileArrow)attacker).owner != null) {
-//					blamedAttacker = ((ProjectileArrow)attacker).owner;
-//				}
-//
-//				if (blamedAttacker instanceof Mob) {
-//					((IPlayerAccessor)thisObject).alertWolves((Mob)blamedAttacker, false);
-//				}
-//
-//				thisObject.addStat(StatList.damageTakenStat, damage);
-//				if (attacker != null) {
-//					thisObject.addStat(StatList.mobEncounterStats.get(EntityDispatcher.idForClass(attacker.getClass())), 1);
-//				}
-//
-//				return ((IMob)thisObject).bws$hurt(attacker, damage, type);
-//			}
-//		}
-//	}
 
 
 	/**
@@ -151,13 +141,36 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 		} else {
 			this.swingProgressNew = 0;
 		}
-		updatePlayerLight();
+		this.swingProgress = MathHelper.clamp(this.swingProgressNew / 8, 0, 1);
 
-		((Mob)(Object)this).swingProgress = MathHelper.clamp(this.swingProgressNew / 8, 0, 1);
+		updatePlayerLight();
+		updatePlayerSpeed();
+	}
+
+	@Unique
+	public void updatePlayerSpeed(){
+		float weight = 0;
+		for(ItemStack stack : this.inventory.armorInventory){
+			if(stack != null && stack.getItem() instanceof BWSItemArmor){
+				weight += ((BWSItemArmor)stack.getItem()).weight;
+			}
+		}
+		float load = weight / BWSConfig.PLAYER_LOAD_DEFAULT;
+
+		float moveSpeedMul = MathHelper.clamp(1.25f - (load*0.35f), 0.8f, 1.25f);
+
+
+		this.loadDisplay = weight;
+		this.baseSpeed = .1f*moveSpeedMul;
 	}
 
 	@Unique
 	public void updatePlayerLight(){
+
+		if(!(BWSOptions.dynLightEnabled.value && BWSOptions.dynLightPlayer.value) || dyn == null){
+			return;
+		}
+
 
 		ItemStack stack = thisObject.getHeldItem();
 
@@ -179,8 +192,8 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 			boolean medEmit = !blockIsWater && stack.itemID == Blocks.TORCH_COAL.id()
 				|| stack.itemID == Items.LANTERN_FIREFLY_GREEN.id
 				|| stack.itemID == Items.LANTERN_FIREFLY_BLUE.id
-				|| stack.itemID == Blocks.PUMPKIN_CARVED_ACTIVE.id()
-				|| stack.itemID == Items.LANTERN_FIREFLY_ORANGE.id;
+				|| !blockIsWater && stack.itemID == Blocks.PUMPKIN_CARVED_ACTIVE.id()
+				|| !blockIsWater && stack.itemID == Items.LANTERN_FIREFLY_ORANGE.id;
 			boolean highEmit = !blockIsWater && stack.itemID == Items.BUCKET_LAVA.id
 				|| stack.itemID == Blocks.GLOWSTONE.id();
 
@@ -188,11 +201,11 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 			emits = lowEmit || medEmit || highEmit;
 			if(lowEmit) {
 				brightness = 12;
-				radius = 3;
+				radius = 4;
 			}
 			if(medEmit) {
-				brightness = 17;
-				radius = 5;
+				brightness = 14;
+				radius = 6;
 			}
 			if(highEmit) {
 				brightness = 20;
@@ -200,7 +213,8 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 			}
 		}
 
-		dyn.brightness =  BWSMain.dynLightPlayer.value && emits ? brightness : 0;
+		dyn.radius = radius;
+		dyn.brightness =  BWSOptions.dynLightPlayer.value && emits ? brightness : 0;
 		dyn.markBlocksNearby(true);
 	}
 

@@ -2,30 +2,54 @@ package dxii.betterwithsouls;
 
 
 
-import dxii.betterwithsouls.item.ItemDummy;
+import dxii.betterwithsouls.enums.EAccBonus;
+import dxii.betterwithsouls.item.*;
+import dxii.betterwithsouls.item.armor.BWSArmorMaterial;
+import dxii.betterwithsouls.item.weapon.WeaponClaymore;
+import dxii.betterwithsouls.item.weapon.WeaponMaterial;
 import dxii.betterwithsouls.item.weapon.WeaponShortsword;
 import dxii.betterwithsouls.item.weapon.WeaponTomahawk;
+import dxii.betterwithsouls.util.BWSDamageTypes;
 import net.minecraft.core.item.Item;
-import net.minecraft.core.item.material.ToolMaterial;
+import net.minecraft.core.item.tag.ItemTags;
 import turniplabs.halplibe.helper.ItemBuilder;
+import turniplabs.halplibe.helper.RecipeBuilder;
+import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderBase;
 import turniplabs.halplibe.util.ConfigHandler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
-import static dxii.betterwithsouls.BWSMain.MOD_ID;
+import static dxii.betterwithsouls._BWSMain.MOD_ID;
 
 public class BWSItems {
 	public static int ITEM_ID = BWSConfig.CFG.getInt("IDs.startItemID");
 	public static final ConfigHandler cfg;
 
-	public static Item ITEM_DUMMY;
+	public static final List<Item> standartModels = new ArrayList<>();
+	public static final List<Item> weaponModels = new ArrayList<>();
+	public static final List<Item> weaponModelsBig = new ArrayList<>();
 
-	public static Item SACRIFICE_RING;
-	public static Item SACRIFICE_RING_RARE;
-	public static Item SACRIFICE_RING_BROKEN;
 
-	public static Item TOMAHAWK_STONE;
-	public static Item SHORTSWORD_STONE;
+
+
+
+
+	public static BWSModItem ITEM_DUMMY;
+	public static BWSModItem ITEM_ANIMATOR;
+
+	public static BWSModItem SACRIFICE_RING;
+	public static BWSModItem SACRIFICE_RING_RARE;
+	public static BWSModItem SACRIFICE_RING_BROKEN;
+
+	public static BWSModItem SHORTSWORD_STONE;
+	public static BWSModItem CLAYMORE;
+
+	public static BWSModItem ARMOR_WOODEN_HELMET;
+	public static BWSModItem ARMOR_WOODEN_CHESTPLATE;
+	public static BWSModItem ARMOR_WOODEN_PANTS;
+	public static BWSModItem ARMOR_WOODEN_BOOTS;
 
 	static {
 		Properties prop = new Properties();
@@ -34,12 +58,53 @@ public class BWSItems {
 	}
 
 	public static void initItems() {
-		TOMAHAWK_STONE = new ItemBuilder(MOD_ID)
-			.build(new WeaponTomahawk("tomahawk_stone", MOD_ID + (":item/tomahawk_stone"), nextID()).setWeaponDamage(6));
-		SHORTSWORD_STONE = new ItemBuilder(MOD_ID)
-			.build(new WeaponShortsword(ToolMaterial.stone, "shortsword_stone", MOD_ID + (":item/shortsword_stone"), nextID()).setWeaponDamage(6));
+		//wearables
+		SACRIFICE_RING = new ItemBuilder(MOD_ID)
+			.build(new ItemAccessory("sacrificering", nextID(), EAccBonus.SACRIFICE));
+		SACRIFICE_RING_BROKEN = new ItemBuilder(MOD_ID)
+			.build(new ItemAccessory("sacrificering_broken", nextID(), EAccBonus.SACRIFICE_BROKEN));
+		SACRIFICE_RING_RARE = new ItemBuilder(MOD_ID)
+			.build(new ItemAccessory("sacrificering_rare", nextID(), EAccBonus.SACRIFICE_RARE));
+
+		//weapons
+		CLAYMORE = new ItemBuilder(MOD_ID).addTags(ItemTags.PREVENT_CREATIVE_MINING)
+			.build(new WeaponClaymore(WeaponMaterial.IRON, "claymore", nextID())
+				.withDefence(BWSDamageTypes.SLASH, 15)
+				.withDefence(BWSDamageTypes.THRUST, 10)
+				.withDefence(BWSDamageTypes.STRIKE, 10)
+				.withDefence(BWSDamageTypes.MAGIC, 8)
+				.withDefence(BWSDamageTypes.LIGHTNING, 5)
+				.withDefence(BWSDamageTypes.FIRE, 8)
+				.withDefence(BWSDamageTypes.DARK, 5)
+				.heavy()
+				.setWeaponDamage(10)
+				.withDmgType(BWSDamageTypes.SLASH)
+			);
+		weaponModelsBig.add(CLAYMORE);
+
+		//debug
 		ITEM_DUMMY = new ItemBuilder(MOD_ID)
-			.build(new ItemDummy("item_dummy", MOD_ID + (":item/item_dummy"), nextID()));
+			.build(new ItemDummy("item_dummy", nextID()));
+		ITEM_ANIMATOR = new ItemBuilder(MOD_ID)
+			.build(new ItemAnimator("item_animator", nextID()));
+
+
+		ARMOR_WOODEN_HELMET = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_helmet", BWSArmorMaterial.WOOD, nextID(), 3));
+		ARMOR_WOODEN_CHESTPLATE = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_chestplate", BWSArmorMaterial.WOOD, nextID(), 2));
+		ARMOR_WOODEN_PANTS = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_pants", BWSArmorMaterial.WOOD, nextID(), 1));
+		ARMOR_WOODEN_BOOTS = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_boots", BWSArmorMaterial.WOOD, nextID(), 0));
+
+
+
+
+		standartModels.add(SACRIFICE_RING);
+		standartModels.add(SACRIFICE_RING_BROKEN);
+		standartModels.add(SACRIFICE_RING_RARE);
+		standartModels.add(ITEM_ANIMATOR);
+		standartModels.add(ARMOR_WOODEN_HELMET);
+		standartModels.add(ARMOR_WOODEN_CHESTPLATE);
+		standartModels.add(ARMOR_WOODEN_PANTS);
+		standartModels.add(ARMOR_WOODEN_BOOTS);
 
 	}
 

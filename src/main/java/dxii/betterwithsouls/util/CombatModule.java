@@ -24,84 +24,24 @@ public class CombatModule {
 	public boolean holding;
 
 
-	//public Vec3 oldLightBlockPos;
-
 	public CombatModule(World world, PlayerLocal player){
 		this.world = world;
 		this.player = player;
 	}
 
+	public void respawn(World world, PlayerLocal newplayer){
+		this.world = world;
+		this.player = newplayer;
+	}
 
-//	public void updateDynamicLight(){
-//		if(world != null && player != null) {
-//			int posx = (int) (player.x-1);
-//			int posy = (int) (player.y);
-//			int posz = (int) (player.z);
-//
-//			//System.out.println(oldLightBlockPos);
-//
-//			if (world.getBlockMaterial(posx, posy, posz) == Material.air) {
-//				if(oldLightBlockPos != null){
-//					world.setBlock((int) oldLightBlockPos.x, (int) oldLightBlockPos.y, (int) oldLightBlockPos.z, 0);
-//				}else{
-//					oldLightBlockPos = Vec3.getPermanentVec3(posx,posy, posz);
-//				}
-//				//world.setBlock(posx, posy, posz, Blocks.PUMPKIN_CARVED_ACTIVE.id());
-//				world.setBlock(posx, posy, posz, BWSBlocks.dynamiclight_block.id());
-//				oldLightBlockPos = Vec3.getPermanentVec3(posx,posy, posz);
-//			}else{
-//				world.setBlock((int) oldLightBlockPos.x, (int) oldLightBlockPos.y, (int) oldLightBlockPos.z, 0);
-//			}
-//		}
-//	}
-
-//	public int dynLightDelay;
-//
-//	public void updateBlocksForLightning(){
-//		int rad = BWSConfig.playerLightRad;
-//		int plyx = (int)this.player.x;
-//		int plyy = (int)this.player.y;
-//		int plyz = (int)this.player.z;
-//
-//
-//		for(int x = -rad; x <= rad; x++){
-//			for(int y = -rad; y <= rad; y++){
-//				for(int z = -rad; z <= rad; z++){
-//					this.world.markBlockNeedsUpdate(plyx - x, plyy - y, plyz - z);
-//					this.world.markBlockNeedsUpdate(plyx + x, plyy + y, plyz + z);
-//				}
-//			}
-//		}
-//
-//	}
-
+	boolean firstTick = true;
 	public void update(){
-		if(this.player == null || this.world == null) {
+		if(!firstTick && (this.player == null || this.world == null)) {
 			System.out.println("Combat Module: error!! either player or world is null!!");
 			return;
 		}
-//
-//		if(dynLightDelay != 0){
-//			dynLightDelay--;
-//		}
-//		if(dynLightDelay == 0){
-//			updateBlocksForLightning();
-//			dynLightDelay = 1;
-//		}
+		firstTick = false;
 
-//		if(this.player != null && this.player.getPlayerSpawnCoordinate() != null) {
-//			Vec3 vec1 = Vec3.getPermanentVec3(this.player.x, this.player.y, this.player.z);
-//			Vec3 vec2 = Vec3.getPermanentVec3(
-//				this.player.getPlayerSpawnCoordinate().x,
-//				this.player.getPlayerSpawnCoordinate().y,
-//				this.player.getPlayerSpawnCoordinate().z
-//			);
-//
-//			int dist = (int) BWSUtils.vecDist(vec1, vec2);
-//			System.out.println(dist);
-//		}
-
-		//this.worldObj.markBlockNeedsUpdate(x, y, z);
 		if(this.hitDelay != -1){
 			this.hitDelay--;
 		}if(this.hitDelay < -1){
@@ -159,7 +99,6 @@ public class CombatModule {
 		if( isAtacking() ){
 			return;
 		}
-
 		this.currentWeapon = wep;
 		this.currentStack = stack;
 		this.currentAtkType = type;

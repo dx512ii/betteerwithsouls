@@ -1,8 +1,9 @@
 package dxii.betterwithsouls.mixin;
 
 
-import dxii.betterwithsouls.BWSMain;
+import dxii.betterwithsouls.BWSOptions;
 import net.minecraft.client.option.GameSettings;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.OptionBoolean;
 import net.minecraft.client.option.OptionRange;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,8 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GameSettings.class, remap = false)
-public class GameSettingsMixin {
-
+public abstract class GameSettingsMixin {
 	@Unique
 	public OptionRange dynLightsRate;
 	@Unique
@@ -22,6 +22,10 @@ public class GameSettingsMixin {
 	public OptionBoolean dynLightPlayer;
 	@Unique
 	public OptionBoolean dynLightExplosions;
+	@Unique
+	public KeyBinding keyDodge;
+	@Unique
+	public KeyBinding keyParry;
 
 	@Unique
 	public GameSettings thisObject = (GameSettings) (Object)this;
@@ -30,11 +34,13 @@ public class GameSettingsMixin {
 		method = "<init>",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameSettings;loadOptions()V"))
 	public void settingsMixin(CallbackInfo ci) {
-		BWSMain.optionsInit(thisObject);
-		dynLightsRate = BWSMain.dynLightRate;
-		dynLightsEnabled = BWSMain.dynLightEnabled;
-		dynLightPlayer = BWSMain.dynLightPlayer;
-		dynLightExplosions = BWSMain.dynLightExplosions;
+		BWSOptions.optionsInit(thisObject);
+		dynLightsRate = BWSOptions.dynLightRate;
+		dynLightsEnabled = BWSOptions.dynLightEnabled;
+		dynLightPlayer = BWSOptions.dynLightPlayer;
+		dynLightExplosions = BWSOptions.dynLightExplosions;
+		keyParry = BWSOptions.keyParry;
+		keyDodge = BWSOptions.keyDodge;
 	}
 
 }

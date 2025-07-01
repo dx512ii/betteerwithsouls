@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = Items.class, remap = false)
-public class ItemMixin {
+public class ItemsMixin {
 
 	@Shadow
 	public static Item TOOL_SWORD_STONE;
@@ -22,7 +22,6 @@ public class ItemMixin {
 		at = @At(value = "TAIL")
 	)
 	private static void overwriteSwords(CallbackInfo ci){
-		TOOL_SWORD_STONE = BWSItems.SHORTSWORD_STONE;
 	}
 
 

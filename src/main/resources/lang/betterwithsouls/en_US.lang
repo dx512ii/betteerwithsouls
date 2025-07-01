@@ -4,19 +4,48 @@ item.betterwithsouls.tomahawk_stone.desc = Simple, yet deadly weapon, meant to b
 item.betterwithsouls.shortsword_stone.name= Stone Shortsword
 item.betterwithsouls.shortsword_stone.desc= Slay pesky enemies with this sharp stone blade!
 
+item.betterwithsouls.claymore.name= Claymore
+item.betterwithsouls.claymore.desc= This larger type of greatsword is normally wielded with two hands due to its weight. This highly flexible greatsword can be used to attack in swings or thrusts.
+
 item.betterwithsouls.item_dummy.name= Item Dummy
 item.betterwithsouls.item_dummy.desc= !!DEBUG!! Poseable first person item for animation purposes..
 
-item.minecraft.tool_sword_stone.desc="removed :troll:"
+item.betterwithsouls.pose_dummy.name= Pose Dummy
+item.betterwithsouls.pose_dummy.desc= !!DEBUG!! Poseable biped bro for animation purposes. Spawn him through magic wand.
 
+item.betterwithsouls.item_animator.name= Poser Tool
+item.betterwithsouls.item_animator.desc= !!DEBUG!! Helper item for animation purposes, allows to pose a model and dump it to console. NOTE: mob has to be rendered at least once and be instance of 'BWSMob' class.
+
+item.betterwithsouls.sacrificering.name= Ring of Sacrifice
+item.betterwithsouls.sacrificering.desc= Its wearer will lose nothing upon death, but the ring itself breaks.
+
+item.betterwithsouls.sacrificering_broken.name= Broken ring of Sacrifice
+item.betterwithsouls.sacrificering_broken.desc= Ring is broken, wearer will still lose everything upon death, but the ring itself doesn't leave the wearer. Can be repaired.
+
+item.betterwithsouls.sacrificering_rare.name= Rare ring of Sacrifice
+item.betterwithsouls.sacrificering_rare.desc= Its wearer will lose nothing upon death, the ring will not leave its wearer.
+
+item.betterwithsouls.armor_wooden_helmet.name= Wooden helmet
+item.betterwithsouls.armor_wooden_helmet.desc= A hat made of tree bark.
+item.betterwithsouls.armor_wooden_chestplate.name= Wooden chestplate
+item.betterwithsouls.armor_wooden_chestplate.desc= A chestplate made of tree bark.
+item.betterwithsouls.armor_wooden_pants.name= Wooden pants
+item.betterwithsouls.armor_wooden_pants.desc= Pants made of tree bark.
+item.betterwithsouls.armor_wooden_boots.name= Wooden boots
+item.betterwithsouls.armor_wooden_boots.desc= Boots made of tree bark, oof what a tyagi...
+armor_material.wood.desc= Weak defence against physical damage, soul of nature gives wooden armor protection against darkness.
+
+bed.isObstructed=This bed is obstructed.
 
 betterwithsouls.options=Better With Souls
 
-betterwithsouls.category.dynlights=Dynamic Lighs (experimental! may cause lag!!)
-options.betterwithsouls.dynlightsrate=Rate (larger - slower rate)
+betterwithsouls.category.dynlights=Dynamic Lighs (experimental! bugs + lag!!)
+options.betterwithsouls.dynlightsrate=Refresh delay (increase to reduce lag)
 options.betterwithsouls.dynlightsenabled=Enabled
 options.betterwithsouls.dynlightsplayer=Player lights
-options.betterwithsouls.dynlightsexpl=Explosions lights (buggy)
+options.betterwithsouls.dynlightsexpl=Explosion lights (buggy)
+                        key.dodge=Dodge
+                        key.parry=Parry
 
 betterwithsouls.category.keybinds=Keyboard
 
@@ -33,3 +62,14 @@ damagetype.poison.desc=Poison
 damagetype.blood.desc=Blood
 
 
+subtitles.sword.swing=Sword swung somewhere
+subtitles.dmg.flesh=Flesh is ripped somewhere
+subtitles.block.blade=Blade hits block
+subtitles.dmg.dark=Something got dark damaged
+subtitles.dmg.light=Something got light damaged
+subtitles.dmg.fire=Something got fire damaged
+subtitles.humanity=Ethereal sound
+subtitles.dmg.dark=Flesh was cut
+subtitles.ring.break=A ring broke
+subtitles.shield.swing=Shield swung somewhere
+subtitles.parry=Someone got parried

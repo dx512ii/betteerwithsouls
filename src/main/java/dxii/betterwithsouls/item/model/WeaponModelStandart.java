@@ -1,12 +1,9 @@
 package dxii.betterwithsouls.item.model;
 
 import dxii.betterwithsouls.interfaces.IEntity;
-import dxii.betterwithsouls.interfaces.IPlayer;
-import dxii.betterwithsouls.mixin.accessor.IItemModelAccessor;
+import dxii.betterwithsouls.item.ItemWeapon;
 import dxii.betterwithsouls.util.animation.AnimManager;
-import dxii.betterwithsouls.util.animation.Animation;
-import dxii.betterwithsouls.util.animation.Frame;
-import dxii.betterwithsouls.util.animation.Key;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.ItemRenderer;
 import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.item.model.ItemModelStandard;
@@ -25,13 +22,16 @@ import org.lwjgl.opengl.GL11;
 public class WeaponModelStandart extends ItemModelStandard {
 	public IconCoordinate worldTex;
 
+	public ItemWeapon itemWeapon;
 
-
-	public WeaponModelStandart(Item item, String namespace, boolean usesworld) {
+	public WeaponModelStandart(Item item, String namespace, Boolean usesworld) {
 		super(item, namespace);
-
+		IconCoordinate texNormal = TextureRegistry.getTexture(item.namespaceID);
 		//if 'usesworld' is true, it will search for <texture>_world for world/first person rendering
-		this.worldTex = usesworld ? TextureRegistry.getTexture(item.namespaceID+"_world") : TextureRegistry.getTexture(item.namespaceID);
+		this.worldTex = usesworld ? TextureRegistry.getTexture(item.namespaceID+"_world") : texNormal;
+		if(item instanceof ItemWeapon) {
+			this.itemWeapon = (ItemWeapon) item;
+		}
 	}
 
 	@Override
@@ -39,6 +39,9 @@ public class WeaponModelStandart extends ItemModelStandard {
 		GL11.glEnable(3042);
 		GL11.glBlendFunc(770, 771);
 
+		float scale = (float) MathHelper.clamp(this.worldTex.width, 16, this.worldTex.width) /16;
+		GL11.glScalef(scale, scale, 1);
+		GL11.glTranslatef(-.5f, -0, 0);
 
 		if (this.useColor) {
 			int color = this.getColor(itemStack);
@@ -64,24 +67,23 @@ public class WeaponModelStandart extends ItemModelStandard {
 		float goon = 0.0625F * (16.0F / (float)tileWidth);
 		GL11.glEnable(32826);
 		float thickness = 0.0625F;
-		float pixelWidth = 1.0F / (float)tileWidth;
+		float pixelWidth = width / (float)tileWidth;
 		if (worldTransform) {
-			GL11.glTranslatef(-0.5F, -0.5F, 0.03125F);
+			GL11.glTranslatef(-0.5F, -0.5F, thickness*.5f);
 		}
-
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(0.0F, 0.0F, 1.0F);
-		tessellator.addVertexWithUV(0.0, 0.0, 0.0, (double)uMax, (double)vMax);
-		tessellator.addVertexWithUV(1.0, 0.0, 0.0, (double)uMin, (double)vMax);
-		tessellator.addVertexWithUV(1.0, 1.0, 0.0, (double)uMin, (double)vMin);
-		tessellator.addVertexWithUV(0.0, 1.0, 0.0, (double)uMax, (double)vMin);
+		tessellator.addVertexWithUV(0.0, 0.0, 0.0, uMax, vMax);
+		tessellator.addVertexWithUV(1.0, 0.0, 0.0, uMin, vMax);
+		tessellator.addVertexWithUV(1.0, 1.0, 0.0, uMin, vMin);
+		tessellator.addVertexWithUV(0.0, 1.0, 0.0, uMax, vMin);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(0.0F, 0.0F, -1.0F);
-		tessellator.addVertexWithUV(0.0, 1.0, -0.0625, (double)uMax, (double)vMin);
-		tessellator.addVertexWithUV(1.0, 1.0, -0.0625, (double)uMin, (double)vMin);
-		tessellator.addVertexWithUV(1.0, 0.0, -0.0625, (double)uMin, (double)vMax);
-		tessellator.addVertexWithUV(0.0, 0.0, -0.0625, (double)uMax, (double)vMax);
+		tessellator.addVertexWithUV(0.0, 1.0, -0.0625, uMax, vMin);
+		tessellator.addVertexWithUV(1.0, 1.0, -0.0625, uMin, vMin);
+		tessellator.addVertexWithUV(1.0, 0.0, -0.0625, uMin, vMax);
+		tessellator.addVertexWithUV(0.0, 0.0, -0.0625, uMax, vMax);
 		tessellator.draw();
 		tessellator.startDrawingQuads();
 		tessellator.setNormal(-1.0F, 0.0F, 0.0F);
@@ -90,10 +92,10 @@ public class WeaponModelStandart extends ItemModelStandard {
 			float texProgress = (float)i * pixelWidth;
 			float u = uMax + uDiff * texProgress - foon;
 			float x = texProgress;
-			tessellator.addVertexWithUV((double)x, 0.0, -0.0625, (double)u, (double)vMax);
-			tessellator.addVertexWithUV((double)x, 0.0, 0.0, (double)u, (double)vMax);
-			tessellator.addVertexWithUV((double)x, 1.0, 0.0, (double)u, (double)vMin);
-			tessellator.addVertexWithUV((double)x, 1.0, -0.0625, (double)u, (double)vMin);
+			tessellator.addVertexWithUV(x, 0.0, -0.0625, u, vMax);
+			tessellator.addVertexWithUV(x, 0.0, 0.0, u, vMax);
+			tessellator.addVertexWithUV(x, 1.0, 0.0, u, vMin);
+			tessellator.addVertexWithUV(x, 1.0, -0.0625, u, vMin);
 		}
 
 		tessellator.draw();
@@ -104,10 +106,10 @@ public class WeaponModelStandart extends ItemModelStandard {
 			float texProgress = (float)i * pixelWidth;
 			float u = uMax + uDiff * texProgress - foon;
 			float x = texProgress + goon;
-			tessellator.addVertexWithUV((double)x, 1.0, -0.0625, (double)u, (double)vMin);
-			tessellator.addVertexWithUV((double)x, 1.0, 0.0, (double)u, (double)vMin);
-			tessellator.addVertexWithUV((double)x, 0.0, 0.0, (double)u, (double)vMax);
-			tessellator.addVertexWithUV((double)x, 0.0, -0.0625, (double)u, (double)vMax);
+			tessellator.addVertexWithUV(x, 1.0, -0.0625, u, vMin);
+			tessellator.addVertexWithUV(x, 1.0, 0.0, u, vMin);
+			tessellator.addVertexWithUV(x, 0.0, 0.0, u, vMax);
+			tessellator.addVertexWithUV(x, 0.0, -0.0625, u, vMax);
 		}
 
 		tessellator.draw();
@@ -118,10 +120,10 @@ public class WeaponModelStandart extends ItemModelStandard {
 			float texProgress = (float)i * pixelWidth;
 			float v = vMax + vDiff * texProgress - foon;
 			float y = texProgress + goon;
-			tessellator.addVertexWithUV(0.0, (double)y, 0.0, (double)uMax, (double)v);
-			tessellator.addVertexWithUV(1.0, (double)y, 0.0, (double)uMin, (double)v);
-			tessellator.addVertexWithUV(1.0, (double)y, -0.0625, (double)uMin, (double)v);
-			tessellator.addVertexWithUV(0.0, (double)y, -0.0625, (double)uMax, (double)v);
+			tessellator.addVertexWithUV(0.0, y, 0.0, uMax, v);
+			tessellator.addVertexWithUV(1.0, y, 0.0, uMin, v);
+			tessellator.addVertexWithUV(1.0, y, -0.0625, uMin, v);
+			tessellator.addVertexWithUV(0.0, y, -0.0625, uMax, v);
 		}
 
 		tessellator.draw();
@@ -131,13 +133,14 @@ public class WeaponModelStandart extends ItemModelStandard {
 		for (int i = 0; i < tileWidth; i++) {
 			float texProgress = (float)i * pixelWidth;
 			float v = vMax + vDiff * texProgress - foon;
-			tessellator.addVertexWithUV(1.0, (double) texProgress, 0.0, (double)uMin, (double)v);
-			tessellator.addVertexWithUV(0.0, (double) texProgress, 0.0, (double)uMax, (double)v);
-			tessellator.addVertexWithUV(0.0, (double) texProgress, -0.0625, (double)uMax, (double)v);
-			tessellator.addVertexWithUV(1.0, (double) texProgress, -0.0625, (double)uMin, (double)v);
+			tessellator.addVertexWithUV(1.0,  texProgress, 0.0, uMin, v);
+			tessellator.addVertexWithUV(0.0,  texProgress, 0.0, uMax, v);
+			tessellator.addVertexWithUV(0.0,  texProgress, -0.0625, uMax, v);
+			tessellator.addVertexWithUV(1.0,  texProgress, -0.0625, uMin, v);
 		}
 
 		tessellator.draw();
+
 		GL11.glDisable(32826);
 		GL11.glDisable(3042);
 	}
@@ -149,8 +152,13 @@ public class WeaponModelStandart extends ItemModelStandard {
 
 	@Override
 	public void renderItemFirstPerson(Tessellator tessellator, ItemRenderer renderer, Player player, ItemStack stack, float partialTick) {
+		if(false){
+			return;
+		}
+
+
 		float brightness = 1.0F;
-		if (!((IItemModelAccessor)this).getMc().fullbright && !this.itemfullBright && !LightmapHelper.isLightmapEnabled()) {
+		if (!Minecraft.getMinecraft().fullbright && !this.itemfullBright && !LightmapHelper.isLightmapEnabled()) {
 			brightness = player.getBrightness(1.0F);
 		} else if (LightmapHelper.isLightmapEnabled()) {
 			int lightmapCoord = player.getLightmapCoord(partialTick);
@@ -166,7 +174,7 @@ public class WeaponModelStandart extends ItemModelStandard {
 
 		AnimManager VMmanager = ((IEntity)player).bws$getVMManager();
 		if(viewModelAnimated(VMmanager)) {
-			GL11.glTranslatef(0.56F, -0.52F - (1.0F - renderer.getEquippedProgress(partialTick)) * 0.6F, -0.71999997F);
+			GL11.glTranslatef(0.56F, -0.52F, -0.71999997F);
 			GL11.glRotatef(45, 0, 1, 0);
 
 			float x = VMmanager.getXLerp("weapon");
@@ -181,9 +189,9 @@ public class WeaponModelStandart extends ItemModelStandard {
 				x,
 				y,
 				z);
-			GL11.glRotatef(rotX, 1, 0, 0);
-			GL11.glRotatef(rotY, 0, 1, 0);
 			GL11.glRotatef(rotZ, 0, 0, 1);
+			GL11.glRotatef(rotY, 0, 1, 0);
+			GL11.glRotatef(rotX, 1, 0, 0);
 		}else{
 			float swingProgress = player.getSwingProgress(partialTick);
 			float animationProgress2 = MathHelper.sin(swingProgress * (float) Math.PI);
@@ -207,6 +215,15 @@ public class WeaponModelStandart extends ItemModelStandard {
 
 	@Override
 	public void heldTransformThirdPerson(ItemRenderer renderer, Entity entity, ItemStack itemStack) {
+
+		float offsetx = -0;
+		float offsety = -0;
+		if(this.itemWeapon != null){
+			offsetx = this.itemWeapon.getModelOffsetX();
+			offsety = this.itemWeapon.getModelOffsetY()+.2f;
+		}
+
+		GL11.glTranslatef(offsetx, offsety*.25f, offsety);
 		if (this.bFull3D) {
 			float scale = 0.625F;
 			if (this.rotateWhenRendering) {
@@ -242,11 +259,6 @@ public class WeaponModelStandart extends ItemModelStandard {
 		if (this.pointInfrontOfPlayer) {
 			GL11.glRotatef(-20.0F, 0.0F, 1.0F, 0.0F);
 		}
-
-		GL11.glTranslatef(0, 0, 0);
-		GL11.glRotatef(0, 1, 0, 0);
-		GL11.glRotatef(-0, 0, 1, 0);
-		GL11.glRotatef(-0, 0, 0, 1);
 	}
 
 	public boolean viewModelAnimated(AnimManager manager){

@@ -41,7 +41,7 @@ public class WorldMixin implements IWorld {
 	@Overwrite
 	public float getBrightness(int x, int y, int z, int blockLightValue) {
 		int i1 = thisObject.getBlockLightValue(x, y, z);
-		float light = ((IWorld)thisObject).bws$getDynLights().getBrightness(x, y, z);
+		float light = this.dynLights.getBrightness(x, y, z);
 
 		if (i1 < blockLightValue) {
 			i1 = blockLightValue;
@@ -54,6 +54,7 @@ public class WorldMixin implements IWorld {
 	}
 
 	/**
+	 * @author me
 	 * @reason for the love of dynamic lights
 	 */
 	@Overwrite

@@ -13,6 +13,8 @@ public class DamageInfo { //my try on reducing code bloat in certain functions
 	private boolean ignoresIframes = false;
 	private boolean ignoresResistances= false;
 
+	private boolean noStun;
+
 	public int getDmg(){
 		return this.dmg;
 	}
@@ -32,6 +34,15 @@ public class DamageInfo { //my try on reducing code bloat in certain functions
 		return this.ignoresResistances;
 	}
 
+	public boolean stuns(){
+
+		return !this.noStun;
+	}
+	public DamageInfo disableStun(){
+		this.noStun = true;
+
+		return this;
+	}
 
 	public DamageInfo setDmg(int newdmg){
 		this.dmg = newdmg;

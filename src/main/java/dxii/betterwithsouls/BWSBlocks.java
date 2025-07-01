@@ -1,14 +1,5 @@
 package dxii.betterwithsouls;
 
-import dxii.betterwithsouls.blocks.BlockLogicNonExistent;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.block.BlockLogic;
-import net.minecraft.core.block.material.Material;
-import net.minecraft.core.block.tag.BlockTags;
-import turniplabs.halplibe.helper.BlockBuilder;
-
-import static dxii.betterwithsouls.BWSMain.MOD_ID;
-
 public class BWSBlocks {
 	private static int startID = BWSConfig.CFG.getInt("IDs.startBlockID");
 	private static int nextID() {
