@@ -5,16 +5,13 @@ package dxii.betterwithsouls;
 import dxii.betterwithsouls.enums.EAccBonus;
 import dxii.betterwithsouls.item.*;
 import dxii.betterwithsouls.item.armor.BWSArmorMaterial;
-import dxii.betterwithsouls.item.weapon.WeaponClaymore;
+import dxii.betterwithsouls.item.weapon.moveset.MovesetGreatsword;
 import dxii.betterwithsouls.item.weapon.WeaponMaterial;
-import dxii.betterwithsouls.item.weapon.WeaponShortsword;
-import dxii.betterwithsouls.item.weapon.WeaponTomahawk;
+import dxii.betterwithsouls.item.weapon.WeaponMelee;
 import dxii.betterwithsouls.util.BWSDamageTypes;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.tag.ItemTags;
 import turniplabs.halplibe.helper.ItemBuilder;
-import turniplabs.halplibe.helper.RecipeBuilder;
-import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderBase;
 import turniplabs.halplibe.util.ConfigHandler;
 
 import java.util.ArrayList;
@@ -30,11 +27,6 @@ public class BWSItems {
 	public static final List<Item> standartModels = new ArrayList<>();
 	public static final List<Item> weaponModels = new ArrayList<>();
 	public static final List<Item> weaponModelsBig = new ArrayList<>();
-
-
-
-
-
 
 	public static BWSModItem ITEM_DUMMY;
 	public static BWSModItem ITEM_ANIMATOR;
@@ -68,7 +60,7 @@ public class BWSItems {
 
 		//weapons
 		CLAYMORE = new ItemBuilder(MOD_ID).addTags(ItemTags.PREVENT_CREATIVE_MINING)
-			.build(new WeaponClaymore(WeaponMaterial.IRON, "claymore", nextID())
+			.build(new WeaponMelee(WeaponMaterial.IRON, "claymore", nextID())
 				.withDefence(BWSDamageTypes.SLASH, 15)
 				.withDefence(BWSDamageTypes.THRUST, 10)
 				.withDefence(BWSDamageTypes.STRIKE, 10)
@@ -76,35 +68,29 @@ public class BWSItems {
 				.withDefence(BWSDamageTypes.LIGHTNING, 5)
 				.withDefence(BWSDamageTypes.FIRE, 8)
 				.withDefence(BWSDamageTypes.DARK, 5)
-				.heavy()
-				.setWeaponDamage(10)
-				.withDmgType(BWSDamageTypes.SLASH)
-			);
-		weaponModelsBig.add(CLAYMORE);
+				.heavySounds()
+				.withAttackDelays(20, 0, 25)
+				.withAttackTimigs(5, 0, 4)
+				.withStats(BWSDamageTypes.SLASH, 10, 3)
+				.withMoveset(new MovesetGreatsword())
+			).withWeaponModel(true);
 
 		//debug
 		ITEM_DUMMY = new ItemBuilder(MOD_ID)
 			.build(new ItemDummy("item_dummy", nextID()));
 		ITEM_ANIMATOR = new ItemBuilder(MOD_ID)
-			.build(new ItemAnimator("item_animator", nextID()));
+			.build(new ItemAnimator("item_animator", nextID()))
+			.withStandartModel();
 
 
-		ARMOR_WOODEN_HELMET = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_helmet", BWSArmorMaterial.WOOD, nextID(), 3));
-		ARMOR_WOODEN_CHESTPLATE = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_chestplate", BWSArmorMaterial.WOOD, nextID(), 2));
-		ARMOR_WOODEN_PANTS = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_pants", BWSArmorMaterial.WOOD, nextID(), 1));
-		ARMOR_WOODEN_BOOTS = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_boots", BWSArmorMaterial.WOOD, nextID(), 0));
-
-
-
-
-		standartModels.add(SACRIFICE_RING);
-		standartModels.add(SACRIFICE_RING_BROKEN);
-		standartModels.add(SACRIFICE_RING_RARE);
-		standartModels.add(ITEM_ANIMATOR);
-		standartModels.add(ARMOR_WOODEN_HELMET);
-		standartModels.add(ARMOR_WOODEN_CHESTPLATE);
-		standartModels.add(ARMOR_WOODEN_PANTS);
-		standartModels.add(ARMOR_WOODEN_BOOTS);
+		ARMOR_WOODEN_HELMET = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_helmet", BWSArmorMaterial.WOOD, nextID(), 3))
+			.withStandartModel();
+		ARMOR_WOODEN_CHESTPLATE = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_chestplate", BWSArmorMaterial.WOOD, nextID(), 2))
+			.withStandartModel();
+		ARMOR_WOODEN_PANTS = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_pants", BWSArmorMaterial.WOOD, nextID(), 1))
+			.withStandartModel();
+		ARMOR_WOODEN_BOOTS = new ItemBuilder(MOD_ID).build(new BWSItemArmor("armor_wooden_boots", BWSArmorMaterial.WOOD, nextID(), 0))
+			.withStandartModel();
 
 	}
 

@@ -5,6 +5,7 @@ import dxii.betterwithsouls.interfaces.ICube;
 import dxii.betterwithsouls.interfaces.IInventory;
 import dxii.betterwithsouls.interfaces.IWorld;
 import dxii.betterwithsouls.item.ItemAccessory;
+import dxii.betterwithsouls.item.ItemWeapon;
 import dxii.betterwithsouls.util.DynamicLight;
 import net.minecraft.client.render.model.Cube;
 import net.minecraft.core.entity.Entity;
@@ -20,6 +21,15 @@ import java.util.Random;
 public class BWSUtils {
 
 	public static final Random rand = new Random();
+
+	public static ItemWeapon playerHoldsWeapon(Player ply){
+		if(ply != null && ply.getHeldItem() != null && ply.getHeldItem().getItem() instanceof ItemWeapon){
+			return ((ItemWeapon) ply.getHeldItem().getItem());
+		}
+		return null;
+	}
+
+
 
 	public static int dmgAgainstResist(int dmg, int resist){
 		return MathHelper.clamp(dmg - resist, 0, dmg);
@@ -98,7 +108,7 @@ public class BWSUtils {
 
 		double entX = ent2.x-f1;
 		double entZ = ent2.z-f2;
-		
+
 		boolean dist = distance * distance >= ent1.distanceToSqr(entX, ent2.y+ent2.bbHeight, entZ);
 		boolean dist2 = distance * distance >= ent1.distanceToSqr(entX, ent2.y-ent2.bbHeight, entZ);
 		boolean dist3 = distance * distance >= ent1.distanceToSqr(entX, ent2.y, entZ);

@@ -48,6 +48,21 @@ public abstract class PlayerMixin extends Mob implements IPlayer {
 	public Player thisObject = (Player)(Object)this;
 	@Unique
 	public float loadDisplay;
+	@Unique
+	public float mana;
+
+	@Override
+	public void takeMana(int mana){
+		this.mana -= mana;
+		if(this.mana < 0){
+			this.mana = 0;
+		}
+	}
+	@Override
+	public boolean hasMana(int mana){
+		return this.mana >= mana;
+	}
+
 
 	@Override
 	public float getLoadDisplay() {

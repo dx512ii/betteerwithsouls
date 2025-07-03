@@ -3,16 +3,17 @@ package dxii.betterwithsouls.item;
 
 
 import dxii.betterwithsouls.BWSUtils;
-import dxii.betterwithsouls.anims.PlayerAnimations;
-import dxii.betterwithsouls.anims.ViewModelAnimations;
 import dxii.betterwithsouls.enums.EReinforcementType;
 import dxii.betterwithsouls.interfaces.IEntity;
 import dxii.betterwithsouls.interfaces.IMob;
 import dxii.betterwithsouls.interfaces.IPlayer;
 import dxii.betterwithsouls.interfaces.IReinforceable;
+import dxii.betterwithsouls.item.weapon.moveset.AnimationMoveset;
 import dxii.betterwithsouls.util.BWSDamageTypes;
 import dxii.betterwithsouls.util.DamageInfo;
+import dxii.betterwithsouls.util.DamageResistModule;
 import dxii.betterwithsouls.util.animation.Animation;
+import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.ItemStack;
@@ -20,6 +21,8 @@ import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.helper.DamageType;
 import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.util.phys.AABB;
+import net.minecraft.core.util.phys.HitResult;
+import net.minecraft.core.util.phys.Vec3;
 import net.minecraft.core.world.World;
 
 import java.util.List;
@@ -29,7 +32,7 @@ import java.util.List;
 DXII'S WEAPON BASE
 IT WORKS, I LIKE IT, IT CAN DO COOLDOWNS, LMB/RMB ATTACKS AND 3RD ONE SPECIAL
 WITH KEYBIND, FEEL FREE TO TAKE IT IF YOU LIKE IT, IT IS CONNECTED DIRECTLY TO MOUSE INPUT
-(CHECK 'MinecraftMixin')
+(CHECK 'MinecraftMixin_old')
  */
 
 public class ItemWeapon extends BWSModItem {
@@ -41,15 +44,6 @@ public class ItemWeapon extends BWSModItem {
 	public int atkTiming1 = 0;
 	public int atkTiming2 = 0;
 	public int atkTiming3 = 0;
-
-
-
-	//on true, if attack button id pressed, it will execute hold function every tick
-	//and will execute delayed attack on release
-	public boolean atk1hold = false;
-	public boolean atk2hold = false;
-	public boolean atk3hold = false;
-
 
 
 	public ItemWeapon(String name, int id) {
@@ -65,46 +59,37 @@ public class ItemWeapon extends BWSModItem {
 	}
 
 	//weapon stats
-	public DamageInfo dinfo1 = new DamageInfo();
+	public DamageInfo dinfo = new DamageInfo();
 	public int damage = 1;
-	public float range = 3;
+	public float meleeRange = 3;
 	public DamageType dtype = BWSDamageTypes.SLASH;
 	public EReinforcementType reinforcementType = EReinforcementType.NONE;
 
-	public ItemWeapon withDmgType(DamageType type){
+	public AnimationMoveset moveset;
+
+	public int manaCost;
+
+	public ItemWeapon withAttackTimigs(int timing1, int timing2, int timing3){
+		this.atkTiming1 = timing1;
+		this.atkTiming2 = timing2;
+		this.atkTiming3 = timing3;
+			return this;
+	}
+	public ItemWeapon withAttackDelays(int delay1, int delay2, int delay3){
+		this.atkDelay1 = delay1;
+		this.atkDelay2 = delay2;
+		this.atkDelay3 = delay3;
+			return this;
+	}
+	public ItemWeapon withStats(DamageType type, int damage, float range){
 		this.dtype = type;
+		this.damage = damage;
+		this.meleeRange = range;
 		return this;
 	}
-
-	//ANIMATIONS
-	public Animation getPlayerIdleAnimation(){
-		return null;
-	}
-	public Animation getIdleAnimation(){
-		return null;
-	}
-
-	private boolean animVariant;
-	public Animation getPlayerAttackAnimation(int type){
-		animVariant = !animVariant;
-		return animVariant ? PlayerAnimations.SHORTSWORD_attack1 : PlayerAnimations.SHORTSWORD_attack1_2;
-	}
-	public Animation getAttackAnimation(int type){
-		return animVariant ? ViewModelAnimations.SHORTSWORD_SWING1 : ViewModelAnimations.SHORTSWORD_SWING2;
-	}
-
-	public Animation getParryAnimation() {
-		return ViewModelAnimations.SHORTSWORD_PARRY;
-	}
-	public Animation getPlayerParryAnimation(){
-		return PlayerAnimations.SHORTSWORD_parry;
-	}
-
-	public Animation getBlockAnimation() {
-		return ViewModelAnimations.GENERIC_block;
-	}
-	public Animation getPlayerBlockAnimation(){
-		return PlayerAnimations.SHORTSWORD_block;
+	public ItemWeapon withMoveset(AnimationMoveset moveset){
+		this.moveset = moveset;
+		return this;
 	}
 
 
@@ -117,21 +102,7 @@ public class ItemWeapon extends BWSModItem {
 		0
 	);
 
-	public String getDeployInfo(){
-		return null;
-	}
-	public String getHolsterInfo(){
-		return null;
-	}
-	public String getAtk1Info(){
-		return null;
-	}
-	public String getAtk2Info(){
-		return null;
-	}
-	public String getAtk3Info(){
-		return null;
-	}
+
 	@Override
 	public String getTranslatedName(ItemStack itemstack) {
 		String upgrade = "";
@@ -147,8 +118,8 @@ public class ItemWeapon extends BWSModItem {
 
 
 	public void deploy(ItemStack itemstack, World world, Player entityplayer){
-		this.sendPlayerAnim(entityplayer, getPlayerIdleAnimation());
-		this.sendVMAnim(entityplayer, getIdleAnimation());
+		this.sendPlayerAnim(entityplayer, moveset.getPlayerIdleAnimation());
+		this.sendVMAnim(entityplayer, moveset.getIdleAnimation());
 	}
 	public void holster(ItemStack itemstack, World world, Player entityplayer){
 		this.stopPlayerAnims(entityplayer);
@@ -161,11 +132,6 @@ public class ItemWeapon extends BWSModItem {
 	*/
 	public void attack1(ItemStack itemstack, World world, Player entityplayer, boolean timed){
 	}
-	//primary hold
-	public void hold1(ItemStack itemstack, World world, Player entityplayer, int totalticks){
-	}
-	public void hold1start(ItemStack itemstack, World world, Player entityplayer){
-	}
 
 	//secondary
 	/**
@@ -174,12 +140,6 @@ public class ItemWeapon extends BWSModItem {
 	 at 0 delay only timed one will be executed
 	 */
 	public void attack2(ItemStack itemstack, World world, Player entityplayer, boolean timed){
-
-	}
-	//secondary hold
-	public void hold2(ItemStack itemstack, World world, Player entityplayer, int totalticks){
-	}
-	public void hold2start(ItemStack itemstack, World world, Player entityplayer){
 
 	}
 
@@ -192,31 +152,23 @@ public class ItemWeapon extends BWSModItem {
 	public void attack3(ItemStack itemstack, World world, Player entityplayer, boolean timed){
 
 	}
-	//parry hold
-	public void hold3(ItemStack itemstack, World world, Player entityplayer, int totalticks){
-	}
-	public void hold3start(ItemStack itemstack, World world, Player entityplayer){
-	}
-
 
 	public int getWeaponDamage(ItemStack stack){
-		return (int) (this.damage + this.damage*.1*getReinforcement(stack));
-	}
-	public ItemWeapon setWeaponDamage(int dmg){
-		this.damage = dmg;
-		return this;
+		byte reinforce = getReinforcement(stack);
+
+		switch(this.reinforcementType){
+			case NORMAL:
+				return (int) (this.damage + this.damage*.1*reinforce);
+			case UNIQUE:
+				return (int) (this.damage + this.damage*.5*reinforce);
+			default:
+				return this.damage;
+		}
 	}
 
-	public ItemWeapon setWeaponRange(float range){
-		this.range = range;
-		return this;
-	}
 
-	public int getDamage(){
-		return this.damage;
-	}
 
-	public void meleeAttack(Mob attacker, DamageInfo dinfo, float range, float dot, String hitsound){
+	public void meleeAttack(Mob attacker, DamageInfo dinfo, float range, float dot, String hitsound, String worldHitSound, boolean heavySound){
 		if(attacker.world == null){
 			return;
 		}
@@ -246,20 +198,31 @@ public class ItemWeapon extends BWSModItem {
 			}
 		}
 		//there should be sound but meh
-//		Vec3 startpos = attacker.getPosition(1, true);
-//		Vec3 viewvec = attacker.getViewVector(1);
-//		viewvec.x *= range;
-//		viewvec.y *= range;
-//		viewvec.z *= range;
-//		Vec3 endpos = startpos.add(viewvec.x, viewvec.y, viewvec.z);
-//
-//		HitResult trace = attacker.world.checkBlockCollisionBetweenPoints(startpos, endpos, false, false, true );
-//		if(trace != null && trace.side != Side.NONE){
-//
-//		}
+		Vec3 startpos = attacker.getPosition(1, true);
+		Vec3 viewvec = attacker.getViewVector(1);
+		viewvec.x *= range;
+		viewvec.y *= range;
+		viewvec.z *= range;
+		Vec3 endpos = startpos.add(viewvec.x, viewvec.y, viewvec.z);
+
+		HitResult trace = attacker.world.checkBlockCollisionBetweenPoints(startpos, endpos, false, false, true );
+		if(trace != null && trace.side != Side.NONE){
+			playSound(attacker, worldHitSound, heavySound, 0.3f, 1);
+		}
 		if(hitsmb){
 			world.playSoundAtEntity(attacker, attacker, hitsound, 0.25F, 1.2F / (BWSUtils.rand.nextFloat() * 0.4F + 1.0F));
 		}
+	}
+	public void raiseGuard(Mob mob, DamageResistModule blockResist, String blockSound){
+		((IMob)mob).raiseGuard(blockResist, blockSound);
+	}
+
+	public void playSound(Entity entity, String sound, boolean heavy, float volmul, float pitchmul){
+		if(entity.world == null){
+			System.out.println("WeaponMelee ERROR: attempt to play sound, entity's world is NULL!!!");
+			return;
+		}
+		entity.world.playSoundAtEntity(entity, entity, sound, 0.5F*volmul, 1.2F / (itemRand.nextFloat() * 0.4F + (heavy ? 1.5f : 1.0F)*pitchmul));
 	}
 
 	@Override

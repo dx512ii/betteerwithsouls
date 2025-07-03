@@ -20,7 +20,7 @@ public class BWSArmorMaterial {
 		.withWeakness(BWSDamageTypes.FIRE, 2)
 		.withDurability(120)
 		.withTooltip("armor_material.wood")
-		.withWeight(45)
+		.withWeight(8)
 	;
 
 	public static BWSArmorMaterial LEATHER = new BWSArmorMaterial().withTexture("leather")
@@ -29,7 +29,7 @@ public class BWSArmorMaterial {
 		.withResist(BWSDamageTypes.POISON, 8)
 		.withDurability(100)
 		.withTooltip("armor_material.leather")
-		.withWeight(8)
+		.withWeight(12)
 	;
 
 

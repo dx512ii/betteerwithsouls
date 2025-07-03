@@ -225,10 +225,10 @@ public class BWSMob extends MobPathfinder {
 	}
 
 	public void playSound(String sound){
-		this.playSound(sound, .75f);
+		this.playSound(sound, .45f);
 	}
 	public void playSound(String sound, float vol){
 		if(this.world == null){return;}
-		this.world.playSoundAtEntity(null, this, sound, 1, 1 + this.random.nextFloat()*0.2f);
+		this.world.playSoundAtEntity(null, this, sound, vol, 1 + this.random.nextFloat()*0.2f);
 	}
 }

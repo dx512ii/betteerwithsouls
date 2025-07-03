@@ -19,7 +19,7 @@ public class EnemyZombie extends BWSMonsterPursuer {
 
 		this.moveSpeedMul = .6f;
 
-		this.attackStrength = 4;
+		this.attackStrength = 10;
 
 		this.attackDistance = 3;
 		this.hitDistance = 2.25f;

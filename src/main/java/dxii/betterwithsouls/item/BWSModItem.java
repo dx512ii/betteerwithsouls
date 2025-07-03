@@ -1,5 +1,6 @@
 package dxii.betterwithsouls.item;
 
+import dxii.betterwithsouls.BWSItems;
 import dxii.betterwithsouls.BWSRecipes;
 import dxii.betterwithsouls._BWSMain;
 import net.minecraft.core.item.Item;
@@ -20,5 +21,21 @@ public class BWSModItem extends Item {
 
 		return this;
 	}
+
+	public BWSModItem withStandartModel(){
+		BWSItems.standartModels.add(this);
+		return this;
+	}
+
+	public BWSModItem withWeaponModel(boolean big){
+		if(big){
+			BWSItems.weaponModelsBig.add(this);
+		}else{
+			BWSItems.weaponModels.add(this);
+		}
+		return this;
+	}
+
+
 
 }

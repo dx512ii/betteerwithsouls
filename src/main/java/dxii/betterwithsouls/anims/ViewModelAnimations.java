@@ -5,6 +5,10 @@ import dxii.betterwithsouls.util.animation.Frame;
 import dxii.betterwithsouls.util.animation.Key;
 
 public class ViewModelAnimations {
+	public static final Animation NULL = new Animation(false)
+		.withFrame(new Frame(0)
+			.withKey(Key.createEmptyKey("weapon")));
+		;
 	public static final Animation SHORTSWORD_SWING1 = new Animation(false)
 		.withFrame(new Frame(0)
 			.withKey(new Key("weapon", .15f, .1f, -0.05f, 20, 10, -85, true, true )))

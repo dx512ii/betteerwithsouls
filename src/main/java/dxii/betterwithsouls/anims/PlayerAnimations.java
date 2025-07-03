@@ -6,8 +6,8 @@ import dxii.betterwithsouls.util.animation.Key;
 
 public class PlayerAnimations {
 	public static final Animation NULL_idle = new Animation(true)
-		.withFrame(new Frame(35)
-			.withKey(new Key("weapon", -0, 0, 0, -0, -0, 0, true, true ))
+		.withFrame(new Frame(0)
+			.withKey(Key.createEmptyKey("null"))
 			);
 
 	public static final Animation SPEAR_idle = new Animation(true)

@@ -11,7 +11,7 @@ public interface IMob {
 	void parry(int ticks);
 	void stun(int ticks);
 	void getParriedIdiot();
-	void startBlocking(DamageResistModule def, String blockSound);
+	void raiseGuard(DamageResistModule def, String blockSound);
 	void stopBlocking();
 	void receiveDamageInfo(DamageInfo dinfo);
 

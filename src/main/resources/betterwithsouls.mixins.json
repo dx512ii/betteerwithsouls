@@ -12,7 +12,6 @@
     "FuckYouSlimeMixin",
     "ItemsMixin",
     "ItemStackMixin",
-    "MinecraftMixin",
     "MobMixin",
     "PlayerMixin",
     "WorldMixin",
@@ -23,6 +22,7 @@
   ],
   "client": [
     "GameSettingsMixin",
+    "MinecraftMixin",
     "PlayerControllerMixin",
     "accessor.IAEntityDispatcher",
     "accessor.IGuiAccessor",

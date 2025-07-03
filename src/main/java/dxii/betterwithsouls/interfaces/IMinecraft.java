@@ -1,6 +1,6 @@
 package dxii.betterwithsouls.interfaces;
 
-import dxii.betterwithsouls.util.animation.BipedPoseInfo_old;
+import dxii.betterwithsouls.util.CombatModule;
 import net.minecraft.core.util.phys.Vec3;
 
 public interface IMinecraft {
@@ -9,4 +9,5 @@ public interface IMinecraft {
 	Vec3 getItemDummyRot();
 	void addToItemDummyRot(double x, double y, double z);
 	void resetItemDummy();
+	CombatModule getCombatModule();
 }

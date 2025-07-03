@@ -25,6 +25,8 @@ public class BWSMonsterPursuer extends BWSMob {
 	public float hitDistance = 2;
 	public DamageType attackDamageType = BWSDamageTypes.SLASH;
 
+	public String attackSound = "";
+
 	public int swingTiming = 14;//time at which swing sound will be played
 	public int attackTiming = 10;//time at which mob will attempt to damage target
 	protected Animation idleAnim;
@@ -135,7 +137,7 @@ public class BWSMonsterPursuer extends BWSMob {
 				this.lookAtTarget();
 
 				if(this.currentStateDuration == this.swingTiming){
-					playSound(MOD_ID+":"+"sword.swing");
+					playSound(attackSound);
 					if(distanceToTargetSqr() >= this.hitDistance*this.hitDistance) {
 						Vec3 view = BWSUtils.getEntityViewVec(this);
 						this.xd += view.x * 0.5;

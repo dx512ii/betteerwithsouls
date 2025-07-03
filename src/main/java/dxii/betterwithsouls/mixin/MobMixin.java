@@ -7,18 +7,15 @@ import dxii.betterwithsouls.interfaces.IMob;
 import dxii.betterwithsouls.mixin.accessor.IEntityAccessor;
 import dxii.betterwithsouls.mixin.accessor.IMobAccessor;
 import dxii.betterwithsouls.util.BWSDamageTypes;
-import dxii.betterwithsouls.util.BlockingInfo;
+import dxii.betterwithsouls.util.BlockingModule;
 import dxii.betterwithsouls.util.DamageInfo;
 import dxii.betterwithsouls.util.DamageResistModule;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.util.helper.DamageType;
-import net.minecraft.core.util.helper.MathHelper;
-import net.minecraft.core.util.helper.Side;
 import net.minecraft.core.util.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,9 +41,7 @@ public abstract class MobMixin implements IMob {
 	@Unique
 	public DamageResistModule dResists = new DamageResistModule();
 	@Unique
-	public BlockingInfo blockInfo = new BlockingInfo();
-	@Unique
-	public float moveSpeedOld;
+	public BlockingModule blockInfo = new BlockingModule();
 
 	@Unique
 	public int parryTicks;
@@ -69,6 +64,9 @@ public abstract class MobMixin implements IMob {
 	public void mobTick(CallbackInfo ci){
 		if(parryTicks > 0){
 			parryTicks--;
+		}
+		if(this.blockInfo.blockingTicks > 0){
+			this.blockInfo.blockingTicks--;
 		}
 	}
 	//ill stick to using bws$receiveDamageInfo for my stuff,
@@ -124,7 +122,7 @@ public abstract class MobMixin implements IMob {
 			dir = dir.normalize();
 
 			int pushResist = this.dResists.getPushResist();
-			if(this.blockInfo != null && this.blockInfo.isBlocking){
+			if(this.blockInfo != null && this.blockInfo.isBlocking()){
 				pushResist += Math.max(this.blockInfo.def.getPushResist(), 0);
 			}
 			//dont even get pushed if push resist == -1 (means it has push immunity)
@@ -151,7 +149,7 @@ public abstract class MobMixin implements IMob {
 			infront = BWSUtils.isEntityInFrontWide(thisObject, dinfo.getAttacker());
 		}
 
-		if(this.blockInfo != null && this.blockInfo.isBlocking && infront){
+		if(this.blockInfo != null && this.blockInfo.isBlocking() && infront){
 			resist += blockInfo.def.getDefence(dinfo.getDmgType());
 			if(resist > 0) {
 				thisObject.world.playSoundAtEntity(null, thisObject, MOD_ID + ":" + blockInfo.blockSound, 0.45f, 1.2F / (BWSUtils.rand.nextFloat() * 0.4F + 1.0F));
@@ -171,6 +169,7 @@ public abstract class MobMixin implements IMob {
 		if((thisObject instanceof Player) && baseDmg == 1){
 			hurtFlinch(dinfo.getAttacker(), baseDmg, dinfo.ignoresIframes());
 		}
+
 		thisObject.setHealthRaw(thisObject.getHealth() - baseDmg);
 		if(baseDmg > 0 || dinfo.getDmgType() == DamageType.FIRE || dinfo.getDmgType() == DamageType.FALL || dinfo.getDmgType() == DamageType.DROWN) {
 			if(thisObject instanceof BWSMonsterPursuer && dinfo.stuns()){
@@ -236,14 +235,10 @@ public abstract class MobMixin implements IMob {
 	}
 
 	@Override
-	public void startBlocking(DamageResistModule def, String blockSound) {
+	public void raiseGuard(DamageResistModule def, String blockSound) {
 		this.blockInfo.def = def;
 		this.blockInfo.blockSound = blockSound;
-		this.blockInfo.isBlocking = true;
-	}
-	@Override
-	public void stopBlocking() {
-		this.blockInfo.isBlocking = false;
+		this.blockInfo.blockingTicks = 2;
 	}
 
 	@Inject(
