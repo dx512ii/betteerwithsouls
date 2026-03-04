@@ -1,11 +1,11 @@
 {
 	"schemaVersion": 1,
-	"id": "examplemod",
+	"id": "betterwithsouls",
 	"version": "${version}",
-	"name": "Example Mod",
-	"description": "This mod aims to help new BTA modders.",
+	"name": "Better With Souls",
+	"description": "Total conversion mod.",
 	"authors": [
-		"Turnip Labs"
+		"dxii"
 	],
 	"contact": {
 		"homepage": "",
@@ -16,20 +16,20 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"turniplabs.examplemod.ExampleMod"
+			"bws.BWSMain"
 		],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"bws.BWSMain"
 		],
 		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"bws.BWSMain"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"bws.BWSMain"
 		]
 	},
 	"mixins": [
-		"examplemod.mixins.json"
+		"bws.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=${fabricloader}",
