@@ -1,53 +1,42 @@
 {
-  "schemaVersion": 1,
-  "id": "betterwithsouls",
-  "version": "${version}",
-
-  "name": "Better With Souls",
-  "description": "Small and simple content mod for BTA!",
-  "authors": [
-    "=dxii="
-  ],
-  "contact": {
-    "homepage": "",
-    "sources": ""
-  },
-
+	"schemaVersion": 1,
+	"id": "examplemod",
+	"version": "${version}",
+	"name": "Example Mod",
+	"description": "This mod aims to help new BTA modders.",
+	"authors": [
+		"Turnip Labs"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
 	"icon": "icon.png",
-  "license": "CC0-1.0",
-
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "dxii.betterwithsouls._BWSMain"
-    ],
+	"license": "CC0-1.0",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"turniplabs.examplemod.ExampleMod"
+		],
 		"beforeGameStart": [
-          "dxii.betterwithsouls._BWSMain"
-		],
-		"beforeClientStart": [
-          "dxii.betterwithsouls._BWSMain"
-		],
-		"afterClientStart": [
-          "dxii.betterwithsouls._BWSMain"
+			"turniplabs.examplemod.ExampleMod"
 		],
 		"afterGameStart": [
-          "dxii.betterwithsouls._BWSMain"
-		],
-		"initModels": [
-			"dxii.betterwithsouls.BWSEntitiesAndModels"
+			"turniplabs.examplemod.ExampleMod"
 		],
 		"recipesReady": [
-          "dxii.betterwithsouls._BWSMain"
+			"turniplabs.examplemod.ExampleMod"
 		]
 	},
-  "mixins": [
-		"betterwithsouls.mixins.json"
-  ],
-
-  "depends": {
+	"mixins": [
+		"examplemod.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=${fabricloader}",
 		"minecraft": "*",
-    "fabricloader": ">=0.15.5"
-  },
-  "suggests": {
-  }
+		"java": ">=${java}"
+	},
+	"suggests": {
+		"modmenu": ">=${modmenu}"
+	}
 }
