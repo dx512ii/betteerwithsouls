@@ -1,0 +1,12 @@
+{
+  "trick": {
+    "sounds": [
+      "trick.ogg"
+    ]
+  },
+  "movement_cloth": {
+    "sounds": [
+      "movement_cloth.ogg"
+    ]
+  }
+}

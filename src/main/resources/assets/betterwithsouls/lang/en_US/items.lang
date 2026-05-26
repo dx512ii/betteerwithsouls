@@ -1,0 +1,34 @@
+item.soul_tier1_light.name=Soul of light (I)
+item.soul_tier1_light.desc=It wasnt designed to comprehend natural forces that destroyed it
+
+item.soul_tier2_light.name=Soul of light (II)
+item.soul_tier2_light.desc=This creature sure fought for its life
+
+item.soul_tier3_light.name=Soul of light (III)
+item.soul_tier3_light.desc=It feels earned
+
+item.soul_tier4_light.name=Soul of light (IV)
+item.soul_tier4_light.desc=Not many entities can defeat such creature in a fight
+
+item.soul_tier5_light.name=Soul of god
+item.soul_tier5_light.desc=It holds incredible power within
+
+
+item.soul_tier1_dark.name=Dark soul (I)
+item.soul_tier1_dark.desc=Evil and small
+
+item.soul_tier2_dark.name=Dark soul (II)
+item.soul_tier2_dark.desc=Chaotic and moderately powerful
+
+item.soul_tier3_dark.name=Dark soul (III)
+item.soul_tier3_dark.desc=It burns to hold this
+
+item.soul_tier4_dark.name=Dark soul (IV)
+item.soul_tier4_dark.desc=You feel your blood boil around it
+
+item.soul_tier5_dark.name=Soul of ...
+item.soul_tier5_dark.desc=It stares at you with eternal malice
+
+item.acc_ring_iron.name=Ring of iron
+
+

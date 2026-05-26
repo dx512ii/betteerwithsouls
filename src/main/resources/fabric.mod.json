@@ -1,11 +1,11 @@
 {
 	"schemaVersion": 1,
-	"id": "examplemod",
+	"id": "betterwithsouls",
 	"version": "${version}",
-	"name": "Example Mod",
-	"description": "This mod aims to help new BTA modders.",
+	"name": "Better With Souls",
+	"description": "THE SUN STARES AT YOU WITH ETERNAL MALICE",
 	"authors": [
-		"Turnip Labs"
+		"dxii"
 	],
 	"contact": {
 		"homepage": "",
@@ -16,20 +16,32 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.bws.BWS"
 		],
 		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.bws.BWS"
 		],
-		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
+		"beforeClientStart": [
+			"dxii.bws.BWSClient"
+		],
+		"afterClientStart": [
+			"dxii.bws.BWSClient"
 		],
 		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
+			"dxii.bws.BWS"
+		],
+		"afterGameStart": [
+			"dxii.bws.BWS"
+		],
+		"initModels": [
+			"dxii.bws.BWSModels"
+		],
+		"initOptions": [
+			"dxii.bws.BWSOptions"
 		]
 	},
 	"mixins": [
-		"examplemod.mixins.json"
+		"betterwithsouls.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=${fabricloader}",

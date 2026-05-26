@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "package": "dxii.bws.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "EntityMixin",
+    "InventoryMixin",
+    "MinecraftMixin",
+    "MobMixin",
+    "PlayerMixin"
+  ],
+  "client": [
+    "accessor.IAEntityRenderer",
+    "EntityCameraMixin",
+    "MobRenderedBipedMixin"
+  ]
+}
