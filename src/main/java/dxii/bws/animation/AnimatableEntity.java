@@ -7,6 +7,7 @@ public interface AnimatableEntity {
 	Animation getCurrentAnimation();
 	float getLastAnimSent();
 	void setLastAnimSent(float newLast);
-	void sendAnimation(Animation animation);
+	void sendAnimation(Animation animation, boolean keepOnEqual);
+	void sendNextAnimation(Animation animation);
 	boolean isAnimating();
 }

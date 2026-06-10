@@ -73,24 +73,14 @@ public class AnimationBoneKeys {
 
 		}
 
-		if(overrideRot) {
-
+		if(rotX != 0){
 			bone.rotX = rotX;
+		}
+		if(rotY != 0){
 			bone.rotY = rotY;
+		}
+		if(rotX != 0){
 			bone.rotZ = rotZ;
-
-		}else{
-
-			if(rotX != 0){
-				bone.rotX = rotX;
-			}
-			if(rotY != 0){
-				bone.rotY = rotY;
-			}
-			if(rotX != 0){
-				bone.rotZ = rotZ;
-			}
-
 		}
 	}
 
@@ -111,7 +101,7 @@ public class AnimationBoneKeys {
 		BoneTransform transformCurrent = keys.transforms.get( stampCurrent );
 		BoneTransform transformNext = keys.transforms.get( stampNext );
 
-		float lerpAmount = getRatioBetweenFramesAt(stampCurrent, stampNext, atTime);
+		float lerpAmount = MathHelper.clamp(getRatioBetweenFramesAt(stampCurrent, stampNext, atTime), 0, 1);
 
 		double posX;
 		double posY;
@@ -121,38 +111,20 @@ public class AnimationBoneKeys {
 		double rotY;
 		double rotZ;
 
-		if(lerpAmount <= 0 || !transformsDiffer(transformCurrent, transformNext)){
-			posX = transformCurrent.posX;
-			posY = transformCurrent.posY;
-			posZ = transformCurrent.posZ;
+		posX = MathHelper.lerp(transformCurrent.posX, transformNext.posX, lerpAmount);
+		posY = MathHelper.lerp(transformCurrent.posY, transformNext.posY, lerpAmount);
+		posZ = MathHelper.lerp(transformCurrent.posZ, transformNext.posZ, lerpAmount);
 
-			rotX = transformCurrent.rotX;
-			rotY = transformCurrent.rotY;
-			rotZ = transformCurrent.rotZ;
-		} else if (lerpAmount >= 1) {
-			posX = transformNext.posX;
-			posY = transformNext.posY;
-			posZ = transformNext.posZ;
-
-			rotX = transformNext.rotX;
-			rotY = transformNext.rotY;
-			rotZ = transformNext.rotZ;
-		}else{
-			posX = MathHelper.lerp(transformCurrent.posX, transformNext.posX, lerpAmount);
-			posY = MathHelper.lerp(transformCurrent.posY, transformNext.posY, lerpAmount);
-			posZ = MathHelper.lerp(transformCurrent.posZ, transformNext.posZ, lerpAmount);
-
-			rotX = MathHelper.lerp(transformCurrent.rotX, transformNext.rotX, lerpAmount);
-			rotY = MathHelper.lerp(transformCurrent.rotY, transformNext.rotY, lerpAmount);
-			rotZ = MathHelper.lerp(transformCurrent.rotZ, transformNext.rotZ, lerpAmount);
-		}
+		rotX = MathHelper.lerp(transformCurrent.rotX, transformNext.rotX, lerpAmount);
+		rotY = MathHelper.lerp(transformCurrent.rotY, transformNext.rotY, lerpAmount);
+		rotZ = MathHelper.lerp(transformCurrent.rotZ, transformNext.rotZ, lerpAmount);
 
 		setupTransform(TEMP, posX, posY, posZ, rotX, rotY, rotZ, keys.overrideLoc, keys.overrideRot);
 
 		return TEMP;
 	}
 
-	public void animateBone(BoneTransform bone, float atTime, float scale){
+	public void animateBone(BoneTransform bone, float atTime, float scale, boolean ignoreRot){
 		float[] timestamps = getTimestampsAt(atTime);
 
 		float stampCurrent = timestamps[0];
@@ -167,9 +139,15 @@ public class AnimationBoneKeys {
 		double posY = MathHelper.lerp(transformCurrent.posY, transformNext.posY*scale, lerpAmount);
 		double posZ = MathHelper.lerp(transformCurrent.posZ, transformNext.posZ*scale, lerpAmount);
 
-		double rotX = MathHelper.lerp(transformCurrent.rotX, transformNext.rotX*scale, lerpAmount);
-		double rotY = MathHelper.lerp(transformCurrent.rotY, transformNext.rotY*scale, lerpAmount);
-		double rotZ = MathHelper.lerp(transformCurrent.rotZ, transformNext.rotZ*scale, lerpAmount);
+		double rotX = 0;
+		double rotY = 0;
+		double rotZ = 0;
+
+		if(!ignoreRot){
+			rotX = MathHelper.lerp(transformCurrent.rotX, transformNext.rotX*scale, lerpAmount);
+			rotY = MathHelper.lerp(transformCurrent.rotY, transformNext.rotY*scale, lerpAmount);
+			rotZ = MathHelper.lerp(transformCurrent.rotZ, transformNext.rotZ*scale, lerpAmount);
+		}
 
 		setupTransform( bone, posX, posY, posZ, rotX, rotY, rotZ, this.overrideLoc, this.overrideRot);
 	}

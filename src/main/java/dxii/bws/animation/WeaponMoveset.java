@@ -1,10 +1,31 @@
 package dxii.bws.animation;
 
+
+import static dxii.bws.animation.AnimationsLibrary_humanoid.*;
+
 public class WeaponMoveset {
 
-	public static final WeaponMoveset CLUB = new WeaponMoveset(
-		null, AnimationsLibrary_humanoid.CLUB_ATTACK1, AnimationsLibrary_humanoid.CLUB_ATTACK2, AnimationsLibrary_humanoid.BLOCK_GENERIC
-		);
+	public static final WeaponMoveset HAMMER = new WeaponMoveset(
+		null,
+
+		HAMMER_ATTACK1,
+		BLOCK_GENERIC,
+		HAMMER_ATTACK_OVERHEAD
+	);
+	public static final WeaponMoveset GREATSWORD = new WeaponMoveset(
+		GREATSWORD_IDLE,
+
+		GREATSWORD_ATTACK1,
+		BLOCK_GENERIC,
+		GREATSWORD_ATTACK2
+	);
+	public static final WeaponMoveset GREATHAMMER = new WeaponMoveset(
+		GREATSWORD_IDLE,
+
+		GREATSWORD_ATTACK1,
+		BLOCK_GENERIC,
+		HAMMER_ATTACK_OVERHEAD
+	);
 
 
 

@@ -5,16 +5,27 @@ import dxii.bws.animation.Animation;
 import dxii.bws.animation.WeaponMoveset;
 import dxii.bws.entity.DamageInfo;
 import dxii.bws.entity.DamageTypeBWS;
+import dxii.bws.entity.IMobExtra;
+import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
+import net.minecraft.core.item.ItemStack;
+import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.primitives.AABBd;
+import org.joml.primitives.AABBf;
+
+import java.util.List;
 
 public class ItemWeapon extends ItemBWS{
 	public ItemWeapon(@NotNull String name) {
 		super(name);
 	}
 
-	public WeaponMoveset moveset = WeaponMoveset.CLUB;
+	public WeaponMoveset moveset = WeaponMoveset.HAMMER;
 
 	public int damage = 1;
 	public DamageTypeBWS damageType = DamageTypeBWS.PHYS_SLASH;
@@ -29,14 +40,17 @@ public class ItemWeapon extends ItemBWS{
 
 	public float meleeRange;
 
+	public String impactSound;
+
 	public DamageInfo DINFO = new DamageInfo();
 
 	public ItemWeapon withStats(int damage){
-		return this.withStats(damage, 1);
+		return this.withStats(damage, 1, this.damageType);
 	}
-	public ItemWeapon withStats(int damage, float meleeRange){
+	public ItemWeapon withStats(int damage, float meleeRange, DamageTypeBWS dtype){
 		this.damage = damage;
 		this.meleeRange = meleeRange;
+		this.damageType = dtype;
 
 		return this;
 	}
@@ -65,29 +79,70 @@ public class ItemWeapon extends ItemBWS{
 
 		return this;
 	}
+	public ItemWeapon withImpactSound(String newSound){
+		this.impactSound = newSound;
+
+		return this;
+	}
 
 	public DamageTypeBWS getDamageType(int attackType){
 		return this.damageType;
 	}
 
-	public void attack1(Player ply, World world, boolean timed){
+	public DamageInfo setupDInfo(Player ply, int attackType){
+		DINFO
+			.setDamageType(getDamageType(attackType))
+			.setAttacker(ply)
+			.setDamagePos(new Vector3d(ply.x, ply.y, ply.z))
+		;
+
+		return DINFO;
+	}
+
+	public void attack1(Player ply, World world, ItemStack stack, boolean timed){
 
 	}
-	public void attack2(Player ply, World world, boolean timed){
+	public void attack2(Player ply, World world, ItemStack stack, boolean timed){
 
 	}
-	public void attack3(Player ply, World world, boolean timed){
+	public void attack3(Player ply, World world, ItemStack stack, boolean timed){
 
+	}
+
+	public void attackBeginStop1(Player ply, World world, boolean begin){
+
+	}
+	public void attackBeginStop2(Player ply, World world, boolean begin){
+
+	}
+	public void attackBeginStop3(Player ply, World world, boolean begin){
+
+	}
+
+	public int getDamage(ItemStack stack){
+		float fdmg = (float)this.damage;
+
+		return (int)(fdmg + ( .1f * fdmg * ((IItemStackExtra)(Object)stack ).weaaponGetReinforcement() ));
+	}
+
+	public void onHitMob(Mob mob){
+		//do something
 	}
 
 	public void deploy(Player ply, World world){
-		sendAnimation(ply, null);
+		sendAnimation(ply, moveset.idle());
 	}
 	public void holster(Player ply, World world){
-		sendAnimation(ply, moveset.idle());
+		sendAnimation(ply, null);
 	}
 
 	public void sendAnimation(Player ply, Animation anim){
-		((AnimatableEntity)ply).sendAnimation(anim);
+		this.sendAnimation(ply, anim ,false);
+	}
+	public void sendAnimation(Player ply, Animation anim, boolean keepOnEqual){
+		((AnimatableEntity)ply).sendAnimation(anim, keepOnEqual);
+	}
+	public void sendNextAnimation(Player ply, Animation anim){
+		((AnimatableEntity)ply).sendNextAnimation(anim);
 	}
 }

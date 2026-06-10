@@ -4,6 +4,43 @@
       "trick.ogg"
     ]
   },
+  
+  "impact.melee": {
+    "sounds": [
+      "impact_melee.ogg"
+    ]
+  },
+  
+  "swing.curving": {
+    "sounds": [
+      "swing_curving.ogg"
+    ]
+  },
+  
+  "swing.hammer": {
+    "sounds": [
+      "swing_hammer.ogg"
+    ]
+  },
+  
+  "swing.sword": {
+    "sounds": [
+      "swing_sword.ogg"
+    ]
+  },
+  
+  "swing.spear": {
+    "sounds": [
+      "swing_spear.ogg"
+    ]
+  },
+  
+  "swing.spear_charge": {
+    "sounds": [
+      "swing_spear_charge.ogg"
+    ]
+  },
+  
   "movement_cloth": {
     "sounds": [
       "movement_cloth.ogg"

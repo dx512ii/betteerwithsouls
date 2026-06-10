@@ -9,7 +9,7 @@ public class DamageInfo {
 	private @Nullable Entity attacker;
 	private @Nullable Vector3dc damagePos;
 	private int damage = 0;
-	private float damageForce = 0;
+	private float damageForceMul = 1;
 	public @NotNull DamageTypeBWS damageType = DamageTypeBWS.GENERIC;
 
 	public @Nullable Entity getAttacker(){
@@ -24,8 +24,8 @@ public class DamageInfo {
 	public Vector3dc getDamagePos(){
 		return this.damagePos;
 	}
-	public float getDamageForce(){
-		return this.damageForce;
+	public float getDamageForceMul(){
+		return this.damageForceMul;
 	}
 
 	public DamageInfo setAttacker(@Nullable Entity attacker){
@@ -48,8 +48,8 @@ public class DamageInfo {
 
 		return this;
 	}
-	public DamageInfo setDamageForce(float force){
-		this.damageForce = force;
+	public DamageInfo setDamageForceMul(float force){
+		this.damageForceMul = force;
 
 		return this;
 	}

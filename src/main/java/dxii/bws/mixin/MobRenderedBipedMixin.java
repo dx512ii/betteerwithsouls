@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.useless.dragonfly.models.entity.BoneTransform;
 import org.useless.dragonfly.models.entity.StaticEntityModel;
 
 import java.util.ArrayList;
@@ -54,30 +53,28 @@ public class MobRenderedBipedMixin<T extends Mob> implements AnimatableModel {
 			return;
 		}
 
-		if(showPlayerPartly(entity, model, partialTick)){
-			((IAEntityRenderer)(self)).setShadowOpacity(0);
-		}else{
-			((IAEntityRenderer)(self)).setShadowOpacity(1);
-		}
-
 		// its kinda hard to comprehend how these patterns work but aah whatever
 		if( !(entity instanceof AnimatableEntity aent) ){
 			System.out.println("animation mixin failed for '" + entity + "', reason: not instance of animatable");
 			return;
 		}
 
-		if(!aent.isAnimating()){
-			return;
+		if(aent.isAnimating()){
+			Animation anim = aent.getCurrentAnimation();
+
+			float atTime = BWS.curtime() - aent.getLastAnimSent();
+			if(anim.getPlayMode() == Animation.PlayMode.LOOP && atTime >= anim.getTotalDuration()){
+				aent.setLastAnimSent(BWS.curtime());
+			}
+
+			Animation.animate(model, anim, BWS.curtime() - aent.getLastAnimSent());
 		}
 
-		Animation anim = aent.getCurrentAnimation();
-
-		float atTime = BWS.curtime() - aent.getLastAnimSent();
-		if(anim.getPlayMode() == Animation.PlayMode.LOOP && atTime >= anim.getTotalDuration()){
-			aent.setLastAnimSent(BWS.curtime());
+		if(showPlayerPartly(entity, model, partialTick)){
+			((IAEntityRenderer)(self)).setShadowOpacity(0);
+		}else{
+			((IAEntityRenderer)(self)).setShadowOpacity(1);
 		}
-
-		Animation.animate(model, anim, BWS.curtime() - aent.getLastAnimSent());
 	}
 
 
@@ -103,17 +100,18 @@ public class MobRenderedBipedMixin<T extends Mob> implements AnimatableModel {
 
 		float bodyYaw = this.getBodyYaw_(entity, partialTick);
 		float headYaw = this.getHeadYaw_(entity, partialTick) - bodyYaw;
+		float headPitch = this.getHeadPitch_(entity, partialTick);
 
-		BoneTransform torso = model.getTransform("torso");
-		torso.visible = false;
-		torso.rotY = headYaw;
-
-		model.getTransform("head").visible = false;
-		model.getTransform("rightLeg").visible = false;
-		model.getTransform("leftLeg").visible = false;
+		BWS.setupViewmodelAnimation(model, bodyYaw, headYaw, headPitch);
 
 		return true;
 	}
+
+	@Unique
+	protected float getHeadPitch_(@NotNull T entity, float partialTick) {
+		return MathHelper.lerp(entity.xRotO, entity.xRot, partialTick) * MathHelper.DEG_TO_RAD;
+	}
+
 
 	@Unique
 	private float getBodyYaw_(@NotNull T entity, float partialTick) {

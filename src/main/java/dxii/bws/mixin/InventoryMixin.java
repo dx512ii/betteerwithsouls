@@ -3,12 +3,13 @@ package dxii.bws.mixin;
 import com.mojang.nbt.tags.CompoundTag;
 import com.mojang.nbt.tags.ListTag;
 import dxii.bws.BWS;
+import dxii.bws.interfaces.IInventoryExtra;
 import dxii.bws.item.ItemWeapon;
-import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ContainerInventory.class)
-public class InventoryMixin {
+public class InventoryMixin implements IInventoryExtra {
 
 	@Unique
 	public ContainerInventory self = (ContainerInventory)(Object)this;
@@ -101,6 +102,35 @@ public class InventoryMixin {
 		}
 	}
 
+	@Shadow
+	private int hotbarOffset;
+
+	@Inject(
+		method = "changeCurrentSlot",
+		at = @At(value = "HEAD"), cancellable = true)
+	public void changeSlotCallback(int offset, CallbackInfo ci){
+		if( BWS.getMinecraftExtra().playerIsAttacking() ){
+			ci.cancel();
+		}else{
+			ItemWeapon wepPre = BWS.itemAsWeapon(self.mainInventory[self.getCurrentSlot()]);
+			if(wepPre != null)
+				wepPre.holster(self.player, self.player.world);
+
+			int curslot = self.getCurrentSlot();
+
+			for(curslot -= offset; curslot < this.hotbarOffset; curslot += 9) {
+			}
+
+			while(curslot >= curslot + 9) {
+				curslot -= 9;
+			}
+
+
+			ItemWeapon wepCur = BWS.itemAsWeapon(self.mainInventory[curslot]);
+			if(wepCur != null)
+				wepCur.deploy(self.player, self.player.world);
+		}
+	}
 	@Inject(
 		method = "setCurrentSlot",
 		at = @At(value = "HEAD"), cancellable = true)
@@ -144,5 +174,10 @@ public class InventoryMixin {
 			this.accessories[i] = BWS.getAccessories(inventoryPlayer)[i];
 			BWS.getAccessories(inventoryPlayer)[i] = null;
 		}
+	}
+
+	@Override
+	public ItemStack[] getAccessories() {
+		return this.accessories;
 	}
 }

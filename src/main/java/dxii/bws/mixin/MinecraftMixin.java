@@ -1,10 +1,13 @@
 package dxii.bws.mixin;
 
 import dxii.bws.BWS;
+import dxii.bws.BWSOptions;
 import dxii.bws.interfaces.IMinecraftExtra;
 import dxii.bws.item.ItemWeapon;
 import dxii.bws.modules.AttackModule;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.option.GameSettings;
+import net.minecraft.core.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,52 +34,70 @@ public class MinecraftMixin implements IMinecraftExtra {
 	@Unique
 	public AttackModule attackModule3 = new AttackModule();
 
+
 	@Override
 	public boolean playerIsAttacking() {
 		return !attackModule1.canAttack() || !attackModule2.canAttack() || !attackModule3.canAttack();
 	}
 
-	@Unique
-	public void handleWeaponMouseClick(int type){
-		if(playerIsAttacking()) {
-			return;
-		}
-
-
-		ItemWeapon wep = BWS.playerGetWeapon(self.thePlayer);
-		if(wep == null){
-			return;
-		}
-
-		switch(type){
-			case 0: {
-				wep.attack1(self.thePlayer, self.thePlayer.world, false);
-				attackModule1.performAttack(1, wep.attackTiming1);
-			}
-			case 1: {
-				wep.attack2(self.thePlayer, self.thePlayer.world, false);
-				attackModule2.performAttack(1, wep.attackTiming2);
-			}
-		}
-	}
 
 	@Inject(
 		method = "runTick",
 		at = @At(value = "HEAD"))
 	public void tickExtra(CallbackInfo ci){
 		if(BWS.playerHoldsWeapon(self.thePlayer)) {
+			ItemWeapon curWep = BWS.playerGetWeapon(self.thePlayer);
+
+			if(curWep == null){
+				return;
+			}
+
+			ItemStack wepStack = self.thePlayer.getHeldItem();
+
+			if(!self.isGamePaused && !playerIsAttacking()) {
+				boolean atkpress1 = GameSettings.KEY_ATTACK.isPressed();
+				boolean atkpress2 = GameSettings.KEY_INTERACT.isPressed();
+				boolean atkpress3 = BWSOptions.KEY_ATTACK3.isPressed();
+
+				if(attackModule1.attackHeld != atkpress1){
+					curWep.attackBeginStop1(self.thePlayer, self.thePlayer.world, atkpress1);
+				}
+				if(attackModule2.attackHeld != atkpress2){
+					curWep.attackBeginStop2(self.thePlayer, self.thePlayer.world, atkpress2);
+				}
+				if(attackModule3.attackHeld != atkpress3){
+					curWep.attackBeginStop3(self.thePlayer, self.thePlayer.world, atkpress3);
+				}
+
+				attackModule1.attackHeld = atkpress1;
+				attackModule2.attackHeld = atkpress2;
+				attackModule3.attackHeld = atkpress3;
+
+				if (atkpress1) {
+					curWep.attack1(self.thePlayer, self.thePlayer.world, wepStack, false);
+					attackModule1.performAttack(curWep.attackDelay1, curWep.attackTiming1);
+				}
+				if (atkpress2) {
+					curWep.attack2(self.thePlayer, self.thePlayer.world, wepStack, false);
+					attackModule2.performAttack(curWep.attackDelay2, curWep.attackTiming2);
+				}
+				if (atkpress3) {
+					curWep.attack3(self.thePlayer, self.thePlayer.world, wepStack, false);
+					attackModule3.performAttack(curWep.attackDelay3, curWep.attackTiming3);
+				}
+			}
+
 			if (attackModule1.shouldAttackTimed()) {
-				ItemWeapon curWep = BWS.playerGetWeapon(self.thePlayer);
-				if (curWep != null) curWep.attack1(self.thePlayer, self.thePlayer.world, true);
+				curWep.attack1(self.thePlayer, self.thePlayer.world, wepStack, true);
 			}
 			if (attackModule2.shouldAttackTimed()) {
-				ItemWeapon curWep = BWS.playerGetWeapon(self.thePlayer);
-				if (curWep != null) curWep.attack2(self.thePlayer, self.thePlayer.world, true);
+				curWep.attack2(self.thePlayer, self.thePlayer.world, wepStack, true);
 			}
 			if (attackModule3.shouldAttackTimed()) {
-				ItemWeapon curWep = BWS.playerGetWeapon(self.thePlayer);
-				if (curWep != null) curWep.attack3(self.thePlayer, self.thePlayer.world, true);
+				curWep.attack3(self.thePlayer, self.thePlayer.world, wepStack, true);
 			}
+
+
 		}
 	}
 
@@ -85,10 +106,7 @@ public class MinecraftMixin implements IMinecraftExtra {
 		method = "clickMouse",
 		at = @At(value = "HEAD"), cancellable = true)
 	public void mouseClickIntervention(int clickType, boolean attack, boolean repeat, CallbackInfo ci){
-//		BWS.animtest(self.thePlayer);
-
 		if(BWS.playerHoldsWeapon(self.thePlayer)){
-			handleWeaponMouseClick(clickType);
 			ci.cancel();
 		}
 	}

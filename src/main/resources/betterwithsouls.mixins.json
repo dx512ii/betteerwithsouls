@@ -8,13 +8,16 @@
   "mixins": [
     "EntityMixin",
     "InventoryMixin",
+    "ItemStackMixin",
+    "ItemWandSpawnerMixin",
     "MinecraftMixin",
     "MobMixin",
     "PlayerMixin"
   ],
   "client": [
-    "accessor.IAEntityRenderer",
     "EntityCameraMixin",
-    "MobRenderedBipedMixin"
+    "MobRenderedBipedMixin",
+    "PlayerControllerMixin",
+    "accessor.IAEntityRenderer"
   ]
 }

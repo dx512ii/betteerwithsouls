@@ -32,3 +32,13 @@ item.soul_tier5_dark.desc=It stares at you with eternal malice
 item.acc_ring_iron.name=Ring of iron
 
 
+item.club.name=Wooden Club
+item.club.desc=A club made of wood
+
+item.club_bone.desc=Bone Club
+item.club_bone.desc=A club made of bones, it feels lighter
+
+item.club_great.desc=Great Club
+item.club_great.desc=A big wooden club, it packs a strong, yet slow punch
+
+

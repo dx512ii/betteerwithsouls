@@ -7,8 +7,12 @@ import dxii.bws.animation.Animation;
 import dxii.bws.animation.AnimationEvent;
 import dxii.bws.entity.EntityCondition;
 import dxii.bws.entity.IEntityExtra;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Global;
 import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.Mob;
 import net.minecraft.core.sound.SoundCategory;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,11 +34,16 @@ public class EntityMixin implements AnimatableEntity, AnimEventHandler, IEntityE
 	@Unique
 	Animation currentAnim;
 	@Unique
+	Animation nextAnim;
+
+	@Unique
 	float lastAnimSent;
 	@Unique
 	List<AnimationEvent.Scheduled> animationEvents = new ArrayList<>();
 	@Unique
 	List<EntityCondition.Scheduled> conds = new ArrayList<>();
+	@Unique
+	List<EntityCondition> activeConditions = new ArrayList<>();
 
 
 	@Override
@@ -67,21 +76,41 @@ public class EntityMixin implements AnimatableEntity, AnimEventHandler, IEntityE
 
 
 	@Override
-	public void sendAnimation(Animation animation) {
-		System.out.println("animation sent for '"+ self + "': " + animation);
-		System.out.println("duration: " + animation.getTotalDuration());
+	public void sendAnimation(Animation animation, boolean keepOnEqual) {
+		if(animation == null){
+			this.currentAnim = null;
+			this.lastAnimSent = -1;
+
+			return;
+		}
+
+		if(keepOnEqual && animation == this.currentAnim){
+			return;
+		}
+
+		if(Global.DEBUG_MODE) {
+			System.out.println("animation sent for '" + self + "': " + animation);
+			System.out.println("duration: " + animation.getTotalDuration());
+		}
+
 		this.currentAnim = animation;
 
 
 		for(float eventTime : animation.events.keySet()){
 			AnimationEvent event = animation.events.get(eventTime);
-			System.out.println("	with event '" + event.type + "'");
+
+			if(Global.DEBUG_MODE) System.out.println("	with event '" + event.type + "'");
 
 			animationEvents.add( new AnimationEvent.Scheduled(event, BWS.curtime() + eventTime, event.executionsAmount) );
 		}
 
 
 		this.lastAnimSent = BWS.curtime();
+	}
+
+	@Override
+	public void sendNextAnimation(Animation animation) {
+		this.nextAnim = animation;
 	}
 
 	@Unique
@@ -95,12 +124,17 @@ public class EntityMixin implements AnimatableEntity, AnimEventHandler, IEntityE
 			return;
 		}
 
+		if(!isAnimating() && this.nextAnim != null){
+			sendAnimation(this.nextAnim, false);
+			this.nextAnim = null;
+		}
+
 		float ct = BWS.curtime();
 
 		// iterate through every scheduled event and check if it should be fired
 		for(AnimationEvent.Scheduled event : this.animationEvents){
 			if(ct >= event.timeScheduled && event.ticks > 0){
-				System.out.println(self+": firing animation event '" + event.eventRef.type + "'");
+				if(Global.DEBUG_MODE) System.out.println(self+": firing animation event '" + event.eventRef.type + "'");
 
 				handleAnimationEvent_base(event.eventRef);
 				((AnimEventHandler)(self)).handleAnimationEvent(event.eventRef);
@@ -108,22 +142,61 @@ public class EntityMixin implements AnimatableEntity, AnimEventHandler, IEntityE
 				--event.ticks;
 			}
 		}
+		for(EntityCondition.Scheduled scond : conds){
+			if(scond.removed()){
+				return;
+			}
 
-		if(ct > lastCleanup + 5){
+			EntityCondition type = scond.cond;
+			activeConditions.clear();
+			handleCondition_base(type);
+		}
+
+
+		if(ct > lastCleanup + 2){
 			this.animationEvents.removeIf(AnimationEvent.Scheduled::removed);
+			this.conds.removeIf(EntityCondition.Scheduled::removed);
 
 			lastCleanup = ct;
 		}
 	}
 
 	@Unique
-	public void handleAnimationEvent_base(AnimationEvent event){
+	public void handleCondition_base(@NonNull EntityCondition cond){
+		if(!hasCondition(cond)){
+			activeConditions.add(cond);
+		}
+
+		switch(cond){
+			case POISON -> {
+
+			}
+			case MOTION_CONSTANT -> {
+
+			}
+			case INVULN_DODGE -> {
+
+			}
+		}
+	}
+	@Unique
+	public void handleAnimationEvent_base(@NonNull AnimationEvent event){
 		switch (event.type){
 			case PLAY_SOUND -> {
 				self.world.playSoundAtEntity(null, self, event.stringMeta, event.meta1, rand.nextFloat() * event.meta3*0.4F + event.meta2*.85f);
 			}
 			case PLAY_SOUND_POS -> {
 				self.world.playSoundEffect(null, SoundCategory.ENTITY_SOUNDS, self.x + event.meta1, self.y + event.meta2, self.z + event.meta3, event.stringMeta, event.meta4, rand.nextFloat() * event.meta6*0.4F + event.meta5*.85f);
+			}
+		}
+
+		//mob specific
+		if(self instanceof Mob mself){
+
+			switch (event.type){
+				case SYNC_BODY_ROT_Y -> {
+					mself.yBodyRot = mself.yRot;
+				}
 			}
 		}
 	}
@@ -135,6 +208,18 @@ public class EntityMixin implements AnimatableEntity, AnimEventHandler, IEntityE
 	@Override
 	public void addCondition(EntityCondition cond, float duration, float meta1, float meta2, float meta3) {
 		conds.add(new EntityCondition.Scheduled(cond, BWS.curtime(), duration, meta1, meta2, meta3));
+	}
+
+	@Override
+	public boolean hasCondition(EntityCondition cond) {
+		return activeConditions.contains(cond);
+	}
+
+	@Override
+	public void removeCondition(EntityCondition cond) {
+		if(!hasCondition(cond)){
+			return;
+		}
 	}
 
 	@Override

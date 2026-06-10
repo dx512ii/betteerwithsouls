@@ -1,6 +1,7 @@
 package dxii.bws.mixin;
 
 
+import dxii.bws.BWS;
 import dxii.bws.entity.DamageInfo;
 import dxii.bws.entity.DamageResistModule;
 import dxii.bws.entity.DamageTypeBWS;
@@ -8,13 +9,16 @@ import dxii.bws.entity.IMobExtra;
 import dxii.bws.interfaces.IEntityBWS;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.Mob;
+import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.util.helper.DamageType;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
@@ -27,6 +31,13 @@ public class MobMixin implements IMobExtra {
 
 	@Unique
 	public DamageResistModule resistModule = new DamageResistModule();
+	@Unique
+	public DamageResistModule blockResist;
+	@Unique
+	public float blockElapse = 0;
+	@Unique
+	public float blockElapseLast = 0;
+
 
 	@Unique
 	private static Map<DamageType, DamageTypeBWS> dtypeRedirects = new HashMap<>();
@@ -49,31 +60,29 @@ public class MobMixin implements IMobExtra {
 			dinfo.setDamagePos(new Vector3d(attacker.x, attacker.y, attacker.z));
 		}
 
-
 		this.takeDamageInfo(dinfo);
 
 		cir.cancel();
 	}
 
+	@Inject(
+		method = "baseTick",
+		at = @At(value = "HEAD"))
+	public void tickExtra(CallbackInfo ci){
+
+	}
+
 	@Override
 	public void takeDamageInfo(DamageInfo dinfo) {
-		int dmgBase = dinfo.getDamage();
-		DamageTypeBWS dtype = dinfo.getDamageType();
-		int dmg = dmgBase;
-		Entity attacker = dinfo.getAttacker();
-
-		dmg = (int) ((float)dmg * resistModule.getResist(dtype));
-
-		boolean doKnockback = true;
-		if(self instanceof IEntityBWS selfBWS){
-			doKnockback = false;
-			if(resistModule.damagePoise(dmg) <= 0){
-				selfBWS.stun();
-			}
+		if(self instanceof Player && ((Player)self).gamemode.hasInvulnerablePlayer()){
+			return;
 		}
 
+		int dmg = BWS.CalculateDamageForMob(self, dinfo, resistModule, this.getBlocking());
 		setHealth(self.getHealth() - dmg);
-		hurtFlinch(attacker, dmg, doKnockback);
+
+		hurtFlinch(dinfo.getAttacker(), dmg, !(self instanceof IEntityBWS));
+
 	}
 
 	@Override
@@ -85,6 +94,41 @@ public class MobMixin implements IMobExtra {
 	public float getResistAgainst(DamageTypeBWS dtype) {
 		return resistModule.getResist(dtype);
 	}
+
+	@Override
+	public void setMaxPoise(int newPoise) {
+		this.resistModule.setMaxPoise(newPoise);
+	}
+
+	@Override
+	public void setPoise(int newPoise) {
+		this.resistModule.setPoise(newPoise);
+	}
+
+	@Override
+	public void raiseBlock(DamageResistModule resists, float duration) {
+		this.raiseBlock(resists, duration, null);
+	}
+
+	@Override
+	public void raiseBlock(DamageResistModule resists, float duration, @Nullable String sound) {
+		this.blockResist = resists;
+		this.blockResist.blockSound = sound;
+		this.blockElapse = BWS.curtime() + duration;
+	}
+
+	@Override
+	public DamageResistModule getBlocking() {
+		if(BWS.curtime() <= this.blockElapse){
+			return this.blockResist;
+		}
+
+		return null;
+	}
+
+
+
+
 
 	@Shadow
 	protected int entityAge;
@@ -201,10 +245,9 @@ public class MobMixin implements IMobExtra {
 	}
 
 	@Unique
-	public void setHealth(int dmg){
-		self.setHealthRaw(self.getHealth() - dmg);
+	public void setHealth(int health){
+		self.setHealthRaw(health);
 	}
-
 
 
 	static{

@@ -41,32 +41,21 @@ public class DamageTypeBWS {
 	public static DamageTypeBWS PHYS_THRUST = new DamageTypeBWS(true, true)
 		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
 
-	public static DamageTypeBWS ELEMENT_MAGIC = new DamageTypeBWS(true, true)
-		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
+//	public static DamageTypeBWS ELEMENT_MAGIC = new DamageTypeBWS(true, true)
+//		.visuals("damagetype.magic", BWS.MOD_ID+":gui/dmg_magic");
 
 	public static DamageTypeBWS ELEMENT_FIRE = new DamageTypeBWS(true, true)
-		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
+		.visuals("damagetype.fire", BWS.MOD_ID+":gui/dmg_fire");
 
-	public static DamageTypeBWS ELEMENT_LIGHTNING = new DamageTypeBWS(true, true)
-		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
-
-	public static DamageTypeBWS ELEMENT_DARK = new DamageTypeBWS(true, true)
-		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
+//	public static DamageTypeBWS ELEMENT_LIGHTNING = new DamageTypeBWS(true, true)
+//		.visuals("damagetype.lightning", BWS.MOD_ID+":gui/dmg_lightning");
+//
+//	public static DamageTypeBWS ELEMENT_DARK = new DamageTypeBWS(true, true)
+//		.visuals("damagetype.dark", BWS.MOD_ID+":gui/dmg_dark");
 
 	public static DamageTypeBWS DEBUFF_POISON = new DamageTypeBWS(true, true)
-		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
+		.visuals("damagetype.poison", BWS.MOD_ID+":gui/dmg_poison");
 
 	public static DamageTypeBWS DEBUFF_BLOOD = new DamageTypeBWS(true, true)
-		.visuals("damagetype.thrust", BWS.MOD_ID+":gui/dmg_thrust");
-
-
-
-	public static final DamageType MAGIC = new DamageType("damagetype.magic", true, true, BWS.MOD_ID+":gui/dmg_magic");
-	public static final DamageType FIRE = new DamageType("damagetype.fire", false, true, BWS.MOD_ID+":gui/dmg_fire");
-	public static final DamageType LIGHTNING = new DamageType("damagetype.lightning", true, true, BWS.MOD_ID+":gui/dmg_light");
-	public static final DamageType DARK = new DamageType("damagetype.dark", true, true, BWS.MOD_ID+":gui/dmg_dark");
-
-	public static final DamageType POISON = new DamageType("damagetype.poison", false, true, BWS.MOD_ID+":gui/dmg_poison");
-	public static final DamageType BLOOD = new DamageType("damagetype.blood", false, true, BWS.MOD_ID+":gui/dmg_blood");
-
+		.visuals("damagetype.blood", BWS.MOD_ID+":gui/dmg_blood");
 }

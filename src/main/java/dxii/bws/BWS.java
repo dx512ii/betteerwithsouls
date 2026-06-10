@@ -1,7 +1,10 @@
 package dxii.bws;
 
 import dxii.bws.animation.AnimatableEntity;
-import dxii.bws.animation.AnimationsLibrary_humanoid;
+import dxii.bws.entity.DamageInfo;
+import dxii.bws.entity.DamageResistModule;
+import dxii.bws.entity.DamageTypeBWS;
+import dxii.bws.interfaces.IEntityBWS;
 import dxii.bws.interfaces.IInventoryExtra;
 import dxii.bws.interfaces.IMinecraftExtra;
 import dxii.bws.item.ItemWeapon;
@@ -15,18 +18,54 @@ import net.minecraft.client.render.block.color.BlockColorDispatcher;
 import net.minecraft.client.render.block.model.BlockModelDispatcher;
 import net.minecraft.client.render.item.model.ItemModelDispatcher;
 import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.Mob;
 import net.minecraft.core.entity.player.Player;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.player.inventory.container.ContainerInventory;
+import net.minecraft.core.util.helper.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.useless.dragonfly.models.entity.BoneTransform;
+import org.useless.dragonfly.models.entity.StaticEntityModel;
 import turniplabs.halplibe.HalpLibe;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.ModelEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 public class BWS implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ModelEntrypoint {
+	public static final int MAX_WEAPONS_REINFORCEMENT = 10;
+	public static int getReinforceSoulTier(int current){
+		float ratio = (float)current / (float)MAX_WEAPONS_REINFORCEMENT;
+		if(ratio < .2){
+			return 0;
+		}
+		if(ratio >= .2){
+			return 1;
+		}
+		if(ratio >= .5){
+			return 2;
+		}
+
+		return 0;
+	}
+	public static int getReinforceSteelCount(int current){
+		float ratio = (float)current / (float)MAX_WEAPONS_REINFORCEMENT;
+		if(ratio < .2){
+			return 1;
+		}
+		if(ratio >= .2){
+			return 2;
+		}
+		if(ratio >= .5){
+			return 4;
+		}
+
+		return 1;
+	}
+
+
 	public static final String MOD_ID = HalpLibe.registerMod("betterwithsouls");
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -75,7 +114,7 @@ public class BWS implements ModInitializer, GameStartEntrypoint, RecipeEntrypoin
 
 	@Override
 	public void afterGameStart() {
-
+		BWSOptions.init();
 	}
 
 	@Override
@@ -115,6 +154,53 @@ public class BWS implements ModInitializer, GameStartEntrypoint, RecipeEntrypoin
 
 
 	// UTIL
+
+	public static int CalculateDamageForMob(Mob self, DamageInfo dinfo, DamageResistModule resistModule, DamageResistModule blockResist){
+		int dmgBase = dinfo.getDamage();
+		DamageTypeBWS dtype = dinfo.getDamageType();
+		int dmg = dmgBase;
+
+		dmg = (int)DamageResistModule.calculateDamage(dmg, resistModule.getResist(dtype));
+		if(blockResist != null){
+			dmg = (int)DamageResistModule.calculateDamage(dmg, blockResist.getResist(dtype));
+		}
+
+		if(self instanceof IEntityBWS selfBWS){
+			if(resistModule.damagePoise(dmg) <= 0){
+				selfBWS.stun();
+			}
+		}
+
+		return dmg;
+	}
+
+	public static void setupViewmodelAnimation(@Nullable StaticEntityModel model, float bodyYaw, float headYaw, float headPitch){
+		BoneTransform waist = model.getTransform("waist");
+		BoneTransform body = model.getTransform("body");
+
+		// waist.visible = false;
+		waist.rotY = headYaw; // + 30*MathHelper.DEG_TO_RAD;
+		body.rotX += MathHelper.clamp(
+			headPitch - 15 * MathHelper.DEG_TO_RAD,
+			-60 * MathHelper.DEG_TO_RAD,
+			60 * MathHelper.DEG_TO_RAD
+		);
+		body.posY += -5;
+		if(body.rotX < 0){
+			body.posY += Math.abs(body.rotX)*10;
+		}
+		body.posZ += -6 + body.rotX*10;
+
+
+		model.getTransform("rightLeg").visible = false;
+		model.getTransform("leftLeg").visible = false;
+
+		body.visible = false;
+		model.getTransform("head").visible = false;
+
+		model.getTransform("rightArm").visible = true;
+		model.getTransform("leftArm").visible = true;
+	}
 
 	public static boolean playerHoldsWeapon(Player ply){
 		if(ply == null){

@@ -1,23 +1,25 @@
 package dxii.bws.entity;
 
+import dxii.bws.BWS;
+
 public enum EntityCondition {
 	NONE,
 
 	INVULN_DODGE,
 
 	/**
-	 * constantly moving in the same direction, which is defined by meta 2,3,4
+	 * constantly moving in the same direction, which is defined by meta 1,2,3
 	 */
-	DODGING,
+	MOTION_CONSTANT,
 
 	POISON,
 	;
 
 	public static class Scheduled {
-		EntityCondition cond = EntityCondition.NONE;
+		public EntityCondition cond = EntityCondition.NONE;
 
-		float timeScheduled;
-		float duration;
+		public float timeScheduled;
+		public float duration;
 
 		float meta1;
 		float meta2;
@@ -30,6 +32,10 @@ public enum EntityCondition {
 			this.meta1 = meta1;
 			this.meta2 = meta2;
 			this.meta3 = meta3;
+		}
+
+		public boolean removed(){
+			return BWS.curtime() > timeScheduled + duration;
 		}
 	}
 }

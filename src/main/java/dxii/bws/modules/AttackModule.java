@@ -6,6 +6,7 @@ public class AttackModule {
 
 	public float nextAttack = 0;
 	public float nextAttackTiming = 0;
+	public boolean attackHeld = false;
 
 	public void performAttack(float attackDelay, float timedDelay){
 		nextAttack = BWS.curtime() + attackDelay;

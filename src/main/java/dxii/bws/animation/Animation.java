@@ -63,6 +63,11 @@ public class Animation {
 
 		return this;
 	}
+	public Animation clearEvents(){
+		this.events.clear();
+
+		return this;
+	}
 
 	public Animation copyEventsFrom(@NotNull Animation anim){
 		for(float time : anim.events.keySet()){
@@ -96,7 +101,7 @@ public class Animation {
 				atTime = Math.min(atTime, anim.getTotalDuration());
 			}
 
-			keys.animateBone(bone, atTime, scale);
+			keys.animateBone(bone, atTime, scale, keys.boneName.equals("head"));
 		}
 	}
 

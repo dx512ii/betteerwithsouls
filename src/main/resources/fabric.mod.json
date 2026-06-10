@@ -35,9 +35,6 @@
 		],
 		"initModels": [
 			"dxii.bws.BWSModels"
-		],
-		"initOptions": [
-			"dxii.bws.BWSOptions"
 		]
 	},
 	"mixins": [

@@ -51,8 +51,9 @@ public class AnimationEvent {
 		 * meta2 - duration in seconds
 		 *
 		 */
-		ADD_COND
-
+		ADD_COND,
+		// sync body y rot with head
+		SYNC_BODY_ROT_Y
 
 	}
 
